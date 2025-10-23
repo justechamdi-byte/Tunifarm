@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Farmer-specific styles */
+        .notifications-bar {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: #fff;
+            padding: var(--spacing-md);
+            margin: var(--spacing-md);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .notifications-bar i {
+            font-size: var(--font-size-xl);
+        }
+        
+        .products-container {
+            padding: 0 var(--spacing-md);
+        }
+        
+        .product-card {
+            display: flex;
+            gap: var(--spacing-md);
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+        
+        .product-info {
+            flex: 1;
+        }
+        
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .product-title {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+        }
+        
+        .product-meta {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-sm);
+        }
+        
+        .product-price {
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: var(--font-size-lg);
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-size-sm);
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-primary);
+            font-size: var(--font-size-base);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <i class="fas fa-bars" style="font-size: 20px; color: var(--color-muted); cursor: pointer;"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Notifications Bar -->
+    <div class="notifications-bar">
+        <i class="fas fa-info-circle"></i>
+        <div>
+            <strong>New Order!</strong> 50kg of tomatoes requested by Ali's Market
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Active Products</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">28</div>
+            <div class="stat-label">Total Orders</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">4.8★</div>
+            <div class="stat-label">Rating</div>
+        </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <h2 class="section-title">My Products</h2>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('filterModal').classList.add('active')">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+    </div>
+
+    <!-- Products List -->
+    <div class="products-container">
+        <div class="product-card">
+            <div class="product-image">🍅</div>
+            <div class="product-info">
+                <div class="product-header">
+                    <div class="product-title">Fresh Tomatoes</div>
+                    <span class="badge badge-success">Approved</span>
+                </div>
+                <div class="product-meta">
+                    <i class="fas fa-box"></i> 150kg available • 
+                    <i class="fas fa-eye"></i> 234 views
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">12 TND/kg</div>
+                    <div class="product-actions">
+                        <button class="btn btn-outline btn-sm" onclick="editProduct('tomatoes')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background: var(--color-danger); color: #fff;" onclick="deleteProduct('tomatoes')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🫒</div>
+            <div class="product-info">
+                <div class="product-header">
+                    <div class="product-title">Organic Olives</div>
+                    <span class="badge badge-pending">Pending Review</span>
+                </div>
+                <div class="product-meta">
+                    <i class="fas fa-box"></i> 80kg available • 
+                    <i class="fas fa-eye"></i> 45 views
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">25 TND/kg</div>
+                    <div class="product-actions">
+                        <button class="btn btn-outline btn-sm" onclick="editProduct('olives')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background: var(--color-danger); color: #fff;" onclick="deleteProduct('olives')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🥕</div>
+            <div class="product-info">
+                <div class="product-header">
+                    <div class="product-title">Fresh Carrots</div>
+                    <span class="badge badge-warning">Low Stock</span>
+                </div>
+                <div class="product-meta">
+                    <i class="fas fa-box"></i> 20kg available • 
+                    <i class="fas fa-eye"></i> 189 views
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">8 TND/kg</div>
+                    <div class="product-actions">
+                        <button class="btn btn-outline btn-sm" onclick="editProduct('carrots')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background: var(--color-danger); color: #fff;" onclick="deleteProduct('carrots')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🌽</div>
+            <div class="product-info">
+                <div class="product-header">
+                    <div class="product-title">Sweet Corn</div>
+                    <span class="badge badge-success">Approved</span>
+                </div>
+                <div class="product-meta">
+                    <i class="fas fa-box"></i> 200kg available • 
+                    <i class="fas fa-eye"></i> 312 views
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">6 TND/kg</div>
+                    <div class="product-actions">
+                        <button class="btn btn-outline btn-sm" onclick="editProduct('corn')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background: var(--color-danger); color: #fff;" onclick="deleteProduct('corn')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Button -->
+    <div class="fab" onclick="document.getElementById('addProductModal').classList.add('active')">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Product</h3>
+                <span class="close-modal" onclick="document.getElementById('addProductModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </span>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Fresh Tomatoes">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select">
+                        <option>Vegetables</option>
+                        <option>Fruits</option>
+                        <option>Grains</option>
+                        <option>Dairy</option>
+                        <option>Poultry</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price per kg (TND)</label>
+                    <input type="number" class="form-input" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Available Quantity (kg)</label>
+                    <input type="number" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Describe your product..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" placeholder="City/Region">
+                </div>
+                <button type="button" class="btn btn-primary btn-block" onclick="addProduct()">
+                    Add Product
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="modal" id="filterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Filter Products</h3>
+                <span class="close-modal" onclick="document.getElementById('filterModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select">
+                    <option>All</option>
+                    <option>Approved</option>
+                    <option>Pending</option>
+                    <option>Low Stock</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select">
+                    <option>All Categories</option>
+                    <option>Vegetables</option>
+                    <option>Fruits</option>
+                    <option>Grains</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" onclick="applyFilters()">
+                Apply Filters
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fas fa-leaf"></i>
+            <span>Products</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if(e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        function addProduct() {
+            alert('Product added successfully!');
+            document.getElementById('addProductModal').classList.remove('active');
+        }
+
+        function editProduct(productName) {
+            alert(`Edit ${productName} - This would open the edit form`);
+        }
+
+        function deleteProduct(productName) {
+            if (confirm(`Delete ${productName}? This action cannot be undone.`)) {
+                alert(`${productName} deleted successfully!`);
+            }
+        }
+
+        function applyFilters() {
+            alert('Filters applied!');
+            document.getElementById('filterModal').classList.remove('active');
+        }
+
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

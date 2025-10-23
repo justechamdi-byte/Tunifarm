@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTn - Tunisian Agriculture Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Landing page specific styles */
+        .hero {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: #fff;
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80L1200,75L1200,120L1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat bottom;
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: var(--font-size-4xl);
+            margin-bottom: var(--spacing-md);
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.95;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: var(--spacing-xs);
+            font-size: var(--font-size-sm);
+        }
+        
+        .lang-toggle span {
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .lang-toggle span.active {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        
+        .features {
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-text);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: var(--spacing-lg);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .feature-card h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .feature-card p {
+            color: var(--color-muted);
+            font-size: var(--font-size-base);
+        }
+        
+        .products-section {
+            padding: var(--spacing-xl) var(--spacing-md);
+            background: var(--color-surface);
+        }
+        
+        .products-carousel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .product-card {
+            position: relative;
+            cursor: pointer;
+            transition: transform var(--transition-normal);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #fff;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .product-info {
+            padding: var(--spacing-sm) 0;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .product-price {
+            color: var(--color-primary);
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+        }
+        
+        .product-location {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .about-section {
+            padding: var(--spacing-xl) var(--spacing-md);
+            padding-bottom: 80px;
+        }
+        
+        .about-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        @media (min-width: 768px) {
+            .hero h1 { 
+                font-size: 48px; 
+            }
+            .hero p { 
+                font-size: var(--font-size-lg); 
+            }
+            .hero-buttons {
+                flex-direction: row;
+                justify-content: center;
+                gap: var(--spacing-md);
+            }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .products-carousel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .products-carousel {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>AgriTn</span>
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+                <div class="lang-toggle">
+                    <span class="active">EN</span>
+                    <span>FR</span>
+                    <span>AR</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🌾 Welcome to AgriTn</h1>
+            <p>Tunisia's Premier Agricultural Marketplace<br>Connecting Farmers, Vendors & Transporters</p>
+            <div class="hero-buttons">
+                <a href="farmer.html" class="btn btn-primary btn-lg">
+                    <i class="fas fa-tractor"></i> Join as Farmer
+                </a>
+                <a href="vendor.html" class="btn btn-outline btn-lg">
+                    <i class="fas fa-store"></i> Join as Vendor
+                </a>
+                <a href="transporter.html" class="btn btn-accent btn-lg">
+                    <i class="fas fa-truck"></i> Join as Transporter
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose AgriTn?</h2>
+            <div class="features-grid">
+                <div class="card feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Fresh Products</h3>
+                    <p>Direct from Tunisian farms to your business</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Fair Pricing</h3>
+                    <p>Transparent marketplace with competitive rates</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3>Fast Delivery</h3>
+                    <p>Reliable logistics network across Tunisia</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3>Trust & Safety</h3>
+                    <p>Verified users and secure transactions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="products-section">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="products-carousel">
+                <div class="card product-card" onclick="alert('Product details would open here')">
+                    <div class="product-image">🍅</div>
+                    <div class="product-info">
+                        <div class="product-title">Fresh Tomatoes</div>
+                        <div class="product-price">12 TND/kg</div>
+                        <div class="product-location"><i class="fas fa-map-marker-alt"></i> Nabeul</div>
+                    </div>
+                </div>
+                <div class="card product-card" onclick="alert('Product details would open here')">
+                    <div class="product-image">🫒</div>
+                    <div class="product-info">
+                        <div class="product-title">Organic Olives</div>
+                        <div class="product-price">25 TND/kg</div>
+                        <div class="product-location"><i class="fas fa-map-marker-alt"></i> Sfax</div>
+                    </div>
+                </div>
+                <div class="card product-card" onclick="alert('Product details would open here')">
+                    <div class="product-image">🥕</div>
+                    <div class="product-info">
+                        <div class="product-title">Fresh Carrots</div>
+                        <div class="product-price">8 TND/kg</div>
+                        <div class="product-location"><i class="fas fa-map-marker-alt"></i> Kairouan</div>
+                    </div>
+                </div>
+                <div class="card product-card" onclick="alert('Product details would open here')">
+                    <div class="product-image">🌽</div>
+                    <div class="product-info">
+                        <div class="product-title">Sweet Corn</div>
+                        <div class="product-price">6 TND/kg</div>
+                        <div class="product-location"><i class="fas fa-map-marker-alt"></i> Bizerte</div>
+                    </div>
+                </div>
+                <div class="card product-card" onclick="alert('Product details would open here')">
+                    <div class="product-image">🥔</div>
+                    <div class="product-info">
+                        <div class="product-title">Potatoes</div>
+                        <div class="product-price">5 TND/kg</div>
+                        <div class="product-location"><i class="fas fa-map-marker-alt"></i> Jendouba</div>
+                    </div>
+                </div>
+                <div class="card product-card" onclick="alert('Product details would open here')">
+                    <div class="product-image">🍊</div>
+                    <div class="product-info">
+                        <div class="product-title">Citrus Fruits</div>
+                        <div class="product-price">15 TND/kg</div>
+                        <div class="product-location"><i class="fas fa-map-marker-alt"></i> Monastir</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="container">
+            <h2 class="section-title">About AgriTn</h2>
+            <div class="about-content">
+                <p class="text-center">AgriTn is revolutionizing Tunisia's agricultural supply chain by connecting farmers directly with vendors and ensuring efficient logistics through our network of transporters. We're committed to supporting local agriculture and making fresh, quality produce accessible to all.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="#" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vendor.html" class="nav-item">
+            <i class="fas fa-leaf"></i>
+            <span>Products</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        // Language toggle
+        document.querySelectorAll('.lang-toggle span').forEach(lang => {
+            lang.addEventListener('click', function() {
+                document.querySelectorAll('.lang-toggle span').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Footer nav active state
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if(!this.classList.contains('active')) {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

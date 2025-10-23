@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Orders-specific styles */
+        .orders-header {
+            background: var(--color-surface);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .orders-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .order-stat-card {
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+        
+        .order-stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .order-stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+        
+        .orders-tabs {
+            display: flex;
+            background: var(--color-surface);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+        }
+        
+        .order-tab {
+            flex: 1;
+            padding: var(--spacing-md);
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            color: var(--color-muted);
+            transition: all var(--transition-normal);
+            white-space: nowrap;
+        }
+        
+        .order-tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+        
+        .order-tab:hover {
+            color: var(--color-primary);
+        }
+        
+        .orders-content {
+            padding: var(--spacing-md);
+        }
+        
+        .order-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+        
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-bg);
+        }
+        
+        .order-id {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+        }
+        
+        .order-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+        
+        .order-status {
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: #FFF3E0;
+            color: var(--color-warning);
+        }
+        
+        .status-processing {
+            background: #E3F2FD;
+            color: var(--color-info);
+        }
+        
+        .status-shipped {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+        
+        .status-delivered {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+        
+        .status-cancelled {
+            background: #FFEBEE;
+            color: var(--color-danger);
+        }
+        
+        .order-items {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--color-bg);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            margin-bottom: 2px;
+        }
+        
+        .item-meta {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted);
+        }
+        
+        .item-price {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: var(--font-size-sm);
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-bg);
+        }
+        
+        .order-total {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .tracking-info {
+            background: var(--color-bg);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+        
+        .tracking-step {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .tracking-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tracking-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-muted);
+        }
+        
+        .tracking-dot.active {
+            background: var(--color-primary);
+        }
+        
+        .tracking-dot.completed {
+            background: var(--color-success);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--color-muted);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-muted);
+        }
+        
+        @media (min-width: 768px) {
+            .orders-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Orders Header -->
+    <div class="orders-header">
+        <h1 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--spacing-md);">My Orders</h1>
+        <div class="orders-stats">
+            <div class="order-stat-card">
+                <div class="order-stat-value">12</div>
+                <div class="order-stat-label">Total Orders</div>
+            </div>
+            <div class="order-stat-card">
+                <div class="order-stat-value">3</div>
+                <div class="order-stat-label">Pending</div>
+            </div>
+            <div class="order-stat-card">
+                <div class="order-stat-value">8</div>
+                <div class="order-stat-label">Processing</div>
+            </div>
+            <div class="order-stat-card">
+                <div class="order-stat-value">1</div>
+                <div class="order-stat-label">Delivered</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Tabs -->
+    <div class="orders-tabs">
+        <div class="order-tab active" onclick="switchOrderTab(0)">
+            <i class="fas fa-clock"></i> All Orders
+        </div>
+        <div class="order-tab" onclick="switchOrderTab(1)">
+            <i class="fas fa-hourglass-half"></i> Pending
+        </div>
+        <div class="order-tab" onclick="switchOrderTab(2)">
+            <i class="fas fa-truck"></i> In Transit
+        </div>
+        <div class="order-tab" onclick="switchOrderTab(3)">
+            <i class="fas fa-check-circle"></i> Delivered
+        </div>
+    </div>
+
+    <!-- Tab Content: All Orders -->
+    <div class="orders-content">
+        <div class="order-tab-content active" id="orders-all">
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2025-1234</div>
+                        <div class="order-date">Placed on Oct 20, 2025</div>
+                    </div>
+                    <span class="order-status status-shipped">In Transit</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="item-image">🍅</div>
+                        <div class="item-details">
+                            <div class="item-name">Fresh Tomatoes</div>
+                            <div class="item-meta">50kg × 12 TND/kg</div>
+                        </div>
+                        <div class="item-price">600 TND</div>
+                    </div>
+                    <div class="order-item">
+                        <div class="item-image">🥕</div>
+                        <div class="item-details">
+                            <div class="item-name">Fresh Carrots</div>
+                            <div class="item-meta">30kg × 8 TND/kg</div>
+                        </div>
+                        <div class="item-price">240 TND</div>
+                    </div>
+                </div>
+                <div class="tracking-info">
+                    <div class="tracking-step">
+                        <div class="tracking-dot completed"></div>
+                        <span>Order Confirmed</span>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="tracking-dot completed"></div>
+                        <span>Preparing for Shipment</span>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="tracking-dot active"></div>
+                        <span>In Transit</span>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="tracking-dot"></div>
+                        <span>Out for Delivery</span>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">840 TND</div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline btn-sm" onclick="trackOrder('ORD-2025-1234')">
+                            <i class="fas fa-route"></i> Track
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails('ORD-2025-1234')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2025-1189</div>
+                        <div class="order-date">Placed on Oct 22, 2025</div>
+                    </div>
+                    <span class="order-status status-processing">Processing</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="item-image">🫒</div>
+                        <div class="item-details">
+                            <div class="item-name">Organic Olives</div>
+                            <div class="item-meta">20kg × 25 TND/kg</div>
+                        </div>
+                        <div class="item-price">500 TND</div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">500 TND</div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline btn-sm" onclick="cancelOrder('ORD-2025-1189')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails('ORD-2025-1189')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2025-1067</div>
+                        <div class="order-date">Placed on Oct 15, 2025</div>
+                    </div>
+                    <span class="order-status status-delivered">Delivered</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="item-image">🌽</div>
+                        <div class="item-details">
+                            <div class="item-name">Sweet Corn</div>
+                            <div class="item-meta">100kg × 6 TND/kg</div>
+                        </div>
+                        <div class="item-price">600 TND</div>
+                    </div>
+                    <div class="order-item">
+                        <div class="item-image">🥔</div>
+                        <div class="item-details">
+                            <div class="item-name">Potatoes</div>
+                            <div class="item-meta">80kg × 5 TND/kg</div>
+                        </div>
+                        <div class="item-price">400 TND</div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">1000 TND</div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline btn-sm" onclick="reorderItems('ORD-2025-1067')">
+                            <i class="fas fa-redo"></i> Reorder
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails('ORD-2025-1067')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Pending Orders -->
+        <div class="order-tab-content" id="orders-pending">
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2025-1189</div>
+                        <div class="order-date">Placed on Oct 22, 2025</div>
+                    </div>
+                    <span class="order-status status-pending">Pending</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="item-image">🫒</div>
+                        <div class="item-details">
+                            <div class="item-name">Organic Olives</div>
+                            <div class="item-meta">20kg × 25 TND/kg</div>
+                        </div>
+                        <div class="item-price">500 TND</div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">500 TND</div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline btn-sm" onclick="cancelOrder('ORD-2025-1189')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails('ORD-2025-1189')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: In Transit -->
+        <div class="order-tab-content" id="orders-transit">
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2025-1234</div>
+                        <div class="order-date">Placed on Oct 20, 2025</div>
+                    </div>
+                    <span class="order-status status-shipped">In Transit</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="item-image">🍅</div>
+                        <div class="item-details">
+                            <div class="item-name">Fresh Tomatoes</div>
+                            <div class="item-meta">50kg × 12 TND/kg</div>
+                        </div>
+                        <div class="item-price">600 TND</div>
+                    </div>
+                    <div class="order-item">
+                        <div class="item-image">🥕</div>
+                        <div class="item-details">
+                            <div class="item-name">Fresh Carrots</div>
+                            <div class="item-meta">30kg × 8 TND/kg</div>
+                        </div>
+                        <div class="item-price">240 TND</div>
+                    </div>
+                </div>
+                <div class="tracking-info">
+                    <div class="tracking-step">
+                        <div class="tracking-dot completed"></div>
+                        <span>Order Confirmed</span>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="tracking-dot completed"></div>
+                        <span>Preparing for Shipment</span>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="tracking-dot active"></div>
+                        <span>In Transit</span>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="tracking-dot"></div>
+                        <span>Out for Delivery</span>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">840 TND</div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline btn-sm" onclick="trackOrder('ORD-2025-1234')">
+                            <i class="fas fa-route"></i> Track
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails('ORD-2025-1234')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Delivered -->
+        <div class="order-tab-content" id="orders-delivered">
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2025-1067</div>
+                        <div class="order-date">Placed on Oct 15, 2025</div>
+                    </div>
+                    <span class="order-status status-delivered">Delivered</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="item-image">🌽</div>
+                        <div class="item-details">
+                            <div class="item-name">Sweet Corn</div>
+                            <div class="item-meta">100kg × 6 TND/kg</div>
+                        </div>
+                        <div class="item-price">600 TND</div>
+                    </div>
+                    <div class="order-item">
+                        <div class="item-image">🥔</div>
+                        <div class="item-details">
+                            <div class="item-name">Potatoes</div>
+                            <div class="item-meta">80kg × 5 TND/kg</div>
+                        </div>
+                        <div class="item-price">400 TND</div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">1000 TND</div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline btn-sm" onclick="reorderItems('ORD-2025-1067')">
+                            <i class="fas fa-redo"></i> Reorder
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails('ORD-2025-1067')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vendor.html" class="nav-item">
+            <i class="fas fa-leaf"></i>
+            <span>Products</span>
+        </a>
+        <a href="orders.html" class="nav-item active">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        function switchOrderTab(index) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.order-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.order-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelectorAll('.order-tab')[index].classList.add('active');
+            document.querySelectorAll('.order-tab-content')[index].classList.add('active');
+        }
+
+        function trackOrder(orderId) {
+            alert(`Tracking order ${orderId}...`);
+            // Here you would open a tracking interface or redirect to tracking page
+        }
+
+        function viewOrderDetails(orderId) {
+            alert(`Viewing details for order ${orderId}...`);
+            // Here you would open a detailed order view modal or redirect to order details page
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm(`Cancel order ${orderId}? This action cannot be undone.`)) {
+                alert(`Order ${orderId} cancelled successfully!`);
+                // Here you would update the order status and refresh the UI
+            }
+        }
+
+        function reorderItems(orderId) {
+            alert(`Reordering items from order ${orderId}...`);
+            // Here you would add the items from the previous order to the cart
+        }
+
+        // Auto-refresh for order updates
+        setInterval(() => {
+            // This would typically fetch order updates from the server
+            console.log('Checking for order updates...');
+        }, 30000); // Check every 30 seconds
+
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

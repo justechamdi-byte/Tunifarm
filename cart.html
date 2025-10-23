@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Cart-specific styles */
+        .cart-header {
+            background: var(--color-surface);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--color-bg);
+        }
+        
+        .cart-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .cart-subtitle {
+            color: var(--color-muted);
+            font-size: var(--font-size-sm);
+        }
+        
+        .cart-content {
+            padding: var(--spacing-md);
+        }
+        
+        .cart-item {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+        
+        .cart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .cart-item-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .item-farmer {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .item-location {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .item-price {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #ddd;
+            background: var(--color-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .quantity-btn:hover {
+            background: var(--color-bg);
+        }
+        
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            padding: var(--spacing-xs);
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        .remove-btn {
+            background: #FFEBEE;
+            color: var(--color-danger);
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .remove-btn:hover {
+            background: #FFCDD2;
+        }
+        
+        .wishlist-btn {
+            background: var(--color-bg);
+            color: var(--color-muted);
+            border: 1px solid #ddd;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .wishlist-btn:hover {
+            background: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
+        }
+        
+        .wishlist-btn.active {
+            background: var(--color-danger);
+            color: #fff;
+            border-color: var(--color-danger);
+        }
+        
+        .cart-summary {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+        
+        .summary-row.total {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--color-primary);
+            border-top: 1px solid var(--color-bg);
+            padding-top: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .summary-label {
+            color: var(--color-muted);
+        }
+        
+        .summary-value {
+            font-weight: 600;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            margin-top: var(--spacing-md);
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--color-muted);
+        }
+        
+        .empty-cart i {
+            font-size: 64px;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-muted);
+        }
+        
+        .empty-cart h3 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .empty-cart p {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .cart-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+        }
+        
+        .promo-code {
+            background: var(--color-bg);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .promo-input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+        }
+        
+        .apply-promo-btn {
+            width: 100%;
+            margin-top: var(--spacing-sm);
+        }
+        
+        .delivery-info {
+            background: #E3F2FD;
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-sm);
+        }
+        
+        .delivery-info i {
+            color: var(--color-info);
+            margin-right: var(--spacing-xs);
+        }
+        
+        @media (min-width: 768px) {
+            .cart-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">3</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Cart Header -->
+    <div class="cart-header">
+        <h1 class="cart-title">Shopping Cart</h1>
+        <p class="cart-subtitle">Review your items before checkout</p>
+    </div>
+
+    <!-- Cart Content -->
+    <div class="cart-content">
+        <div class="cart-grid">
+            <!-- Cart Items -->
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="cart-item-header">
+                        <div class="item-image">🍅</div>
+                        <div class="item-details">
+                            <div class="item-name">Fresh Tomatoes</div>
+                            <div class="item-farmer">by Ahmed's Farm</div>
+                            <div class="item-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Nabeul, Tunisia
+                            </div>
+                        </div>
+                        <div class="item-price">12 TND/kg</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('tomatoes', -1)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="quantity-input" value="50" min="1" max="150" id="qty-tomatoes">
+                        <button class="quantity-btn" onclick="updateQuantity('tomatoes', 1)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <span style="margin-left: var(--spacing-sm); color: var(--color-muted);">kg</span>
+                    </div>
+                    <div class="item-actions">
+                        <button class="remove-btn" onclick="removeItem('tomatoes')">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                        <button class="wishlist-btn" onclick="toggleWishlist('tomatoes')">
+                            <i class="far fa-heart"></i> Save for Later
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cart-item">
+                    <div class="cart-item-header">
+                        <div class="item-image">🥕</div>
+                        <div class="item-details">
+                            <div class="item-name">Fresh Carrots</div>
+                            <div class="item-farmer">by Mohamed's Field</div>
+                            <div class="item-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Kairouan, Tunisia
+                            </div>
+                        </div>
+                        <div class="item-price">8 TND/kg</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('carrots', -1)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="quantity-input" value="30" min="1" max="100" id="qty-carrots">
+                        <button class="quantity-btn" onclick="updateQuantity('carrots', 1)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <span style="margin-left: var(--spacing-sm); color: var(--color-muted);">kg</span>
+                    </div>
+                    <div class="item-actions">
+                        <button class="remove-btn" onclick="removeItem('carrots')">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                        <button class="wishlist-btn active" onclick="toggleWishlist('carrots')">
+                            <i class="fas fa-heart"></i> Saved
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cart-item">
+                    <div class="cart-item-header">
+                        <div class="item-image">🫒</div>
+                        <div class="item-details">
+                            <div class="item-name">Organic Olives</div>
+                            <div class="item-farmer">by Fatma's Orchard</div>
+                            <div class="item-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Sfax, Tunisia
+                            </div>
+                        </div>
+                        <div class="item-price">25 TND/kg</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('olives', -1)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="quantity-input" value="20" min="1" max="80" id="qty-olives">
+                        <button class="quantity-btn" onclick="updateQuantity('olives', 1)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <span style="margin-left: var(--spacing-sm); color: var(--color-muted);">kg</span>
+                    </div>
+                    <div class="item-actions">
+                        <button class="remove-btn" onclick="removeItem('olives')">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                        <button class="wishlist-btn" onclick="toggleWishlist('olives')">
+                            <i class="far fa-heart"></i> Save for Later
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary">
+                <h3 class="summary-title">Order Summary</h3>
+                
+                <div class="delivery-info">
+                    <i class="fas fa-truck"></i>
+                    Free delivery on orders over 50kg
+                </div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal (100kg)</span>
+                    <span class="summary-value" id="subtotal">1,240 TND</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Delivery Fee</span>
+                    <span class="summary-value" id="delivery-fee">0 TND</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Tax</span>
+                    <span class="summary-value" id="tax">0 TND</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span class="summary-label">Total</span>
+                    <span class="summary-value" id="total">1,240 TND</span>
+                </div>
+                
+                <div class="promo-code">
+                    <input type="text" class="promo-input" placeholder="Enter promo code" id="promo-code">
+                    <button class="btn btn-outline btn-sm apply-promo-btn" onclick="applyPromoCode()">
+                        Apply Code
+                    </button>
+                </div>
+                
+                <button class="btn btn-primary btn-lg checkout-btn" onclick="proceedToCheckout()">
+                    <i class="fas fa-credit-card"></i> Proceed to Checkout
+                </button>
+                
+                <div style="text-align: center; margin-top: var(--spacing-md);">
+                    <a href="vendor.html" class="btn btn-outline btn-sm">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vendor.html" class="nav-item">
+            <i class="fas fa-leaf"></i>
+            <span>Products</span>
+        </a>
+        <a href="cart.html" class="nav-item active">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        // Cart functionality
+        let cartItems = {};
+
+        function updateQuantity(itemId, change) {
+            const input = document.getElementById(`qty-${itemId}`);
+            const currentQty = parseInt(input.value);
+            const newQty = Math.max(1, currentQty + change);
+            
+            input.value = newQty;
+            cartItems[itemId].quantity = newQty;
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+            updateCartSummary();
+        }
+
+        function removeItem(itemId) {
+            if (confirm(`Remove ${cartItems[itemId].name} from cart?`)) {
+                delete cartItems[itemId];
+                localStorage.setItem('cart', JSON.stringify(cartItems));
+                renderCartItems();
+                updateCartBadge();
+            }
+        }
+
+        function toggleWishlist(itemId) {
+            const btn = document.querySelector(`[onclick*="${itemId}"]`);
+            const icon = btn.querySelector('i');
+            
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                btn.innerHTML = '<i class="far fa-heart"></i> Save for Later';
+            } else {
+                btn.classList.add('active');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.innerHTML = '<i class="fas fa-heart"></i> Saved';
+            }
+        }
+
+        function updateCartSummary() {
+            let subtotal = 0;
+            let totalWeight = 0;
+            
+            Object.values(cartItems).forEach(item => {
+                subtotal += item.price * item.quantity;
+                totalWeight += item.quantity;
+            });
+            
+            const deliveryFee = totalWeight >= 50 ? 0 : 20;
+            const tax = 0; // No tax for agricultural products
+            const total = subtotal + deliveryFee + tax;
+            
+            document.getElementById('subtotal').textContent = `${subtotal.toLocaleString()} TND`;
+            document.getElementById('delivery-fee').textContent = `${deliveryFee} TND`;
+            document.getElementById('tax').textContent = `${tax} TND`;
+            document.getElementById('total').textContent = `${total.toLocaleString()} TND`;
+            
+            // Update delivery info
+            const deliveryInfo = document.querySelector('.delivery-info');
+            if (totalWeight >= 50) {
+                deliveryInfo.innerHTML = '<i class="fas fa-truck"></i> Free delivery on orders over 50kg';
+                deliveryInfo.style.background = '#E8F5E9';
+                deliveryInfo.style.color = 'var(--color-success)';
+            } else {
+                deliveryInfo.innerHTML = `<i class="fas fa-truck"></i> Add ${50 - totalWeight}kg more for free delivery`;
+                deliveryInfo.style.background = '#FFF3E0';
+                deliveryInfo.style.color = 'var(--color-warning)';
+            }
+        }
+
+        function updateCartBadge() {
+            const totalItems = Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            badge.textContent = totalItems;
+        }
+
+        function applyPromoCode() {
+            const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
+            const validCodes = ['SAVE10', 'WELCOME20', 'FARMER15'];
+            
+            if (validCodes.includes(promoCode)) {
+                alert(`Promo code ${promoCode} applied! 10% discount added.`);
+                // Here you would apply the discount logic
+            } else {
+                alert('Invalid promo code. Please try again.');
+            }
+        }
+
+        function proceedToCheckout() {
+            const totalItems = Object.keys(cartItems).length;
+            if (totalItems === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            alert('Redirecting to checkout...');
+            // Here you would redirect to the checkout page
+        }
+
+        // Load cart from localStorage
+        function loadCartFromStorage() {
+            const storedCart = localStorage.getItem('cart');
+            if (storedCart) {
+                cartItems = JSON.parse(storedCart);
+                renderCartItems();
+            } else {
+                // Show empty cart if no items
+                showEmptyCart();
+            }
+        }
+
+        function renderCartItems() {
+            const cartItemsContainer = document.querySelector('.cart-items');
+            if (Object.keys(cartItems).length === 0) {
+                showEmptyCart();
+                return;
+            }
+
+            let html = '';
+            Object.entries(cartItems).forEach(([itemId, item]) => {
+                const emoji = getItemEmoji(itemId);
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-header">
+                            <div class="item-image">${emoji}</div>
+                            <div class="item-details">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-farmer">by ${getFarmerName(itemId)}</div>
+                                <div class="item-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${getLocation(itemId)}
+                                </div>
+                            </div>
+                            <div class="item-price">${item.price} TND/kg</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity('${itemId}', -1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="150" id="qty-${itemId}">
+                            <button class="quantity-btn" onclick="updateQuantity('${itemId}', 1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <span style="margin-left: var(--spacing-sm); color: var(--color-muted);">kg</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="remove-btn" onclick="removeItem('${itemId}')">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                            <button class="wishlist-btn" onclick="toggleWishlist('${itemId}')">
+                                <i class="far fa-heart"></i> Save for Later
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            cartItemsContainer.innerHTML = html;
+            updateCartSummary();
+        }
+
+        function showEmptyCart() {
+            const cartItemsContainer = document.querySelector('.cart-items');
+            cartItemsContainer.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Add some products to get started!</p>
+                    <a href="vendor.html" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Start Shopping
+                    </a>
+                </div>
+            `;
+        }
+
+        function getItemEmoji(itemId) {
+            const emojis = {
+                tomatoes: '🍅',
+                carrots: '🥕',
+                olives: '🫒',
+                corn: '🌽',
+                potatoes: '🥔',
+                citrus: '🍊'
+            };
+            return emojis[itemId] || '🌱';
+        }
+
+        function getFarmerName(itemId) {
+            const farmers = {
+                tomatoes: "Ahmed's Farm",
+                carrots: "Mohamed's Field",
+                olives: "Fatma's Orchard",
+                corn: "Ali's Farm",
+                potatoes: "Salah's Farm",
+                citrus: "Nadia's Grove"
+            };
+            return farmers[itemId] || "Local Farm";
+        }
+
+        function getLocation(itemId) {
+            const locations = {
+                tomatoes: "Nabeul, Tunisia",
+                carrots: "Kairouan, Tunisia",
+                olives: "Sfax, Tunisia",
+                corn: "Bizerte, Tunisia",
+                potatoes: "Jendouba, Tunisia",
+                citrus: "Monastir, Tunisia"
+            };
+            return locations[itemId] || "Tunisia";
+        }
+
+        // Initialize cart
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartFromStorage();
+            updateCartBadge();
+            
+            // Add event listeners to quantity inputs
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('quantity-input')) {
+                    const itemId = e.target.id.replace('qty-', '');
+                    const quantity = parseInt(e.target.value);
+                    if (quantity > 0 && cartItems[itemId]) {
+                        cartItems[itemId].quantity = quantity;
+                        localStorage.setItem('cart', JSON.stringify(cartItems));
+                        updateCartSummary();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporter Dashboard - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Transporter-specific styles */
+        .deliveries-list {
+            padding: 0 var(--spacing-md);
+        }
+        
+        .delivery-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+        
+        .delivery-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .delivery-id {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+        }
+        
+        .delivery-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-top: 2px;
+        }
+        
+        .delivery-route {
+            background: var(--color-bg);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .route-item {
+            display: flex;
+            align-items: start;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .route-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .route-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        
+        .route-icon.destination {
+            background: var(--color-accent);
+        }
+        
+        .route-info {
+            flex: 1;
+        }
+        
+        .route-location {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+        }
+        
+        .route-address {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+        
+        .delivery-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-sm);
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            color: var(--color-muted);
+            font-size: var(--font-size-xs);
+        }
+        
+        .detail-value {
+            font-weight: 600;
+        }
+        
+        .delivery-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .map-section {
+            padding: var(--spacing-md);
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .map-placeholder i {
+            font-size: 48px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: var(--font-size-sm);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-muted);
+        }
+        
+        .status-dot.active {
+            background: var(--color-success);
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.pending {
+            background: var(--color-warning);
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .earnings-card {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: #fff;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-md);
+            text-align: center;
+        }
+        
+        .earnings-amount {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .earnings-label {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+        }
+        
+        @media (min-width: 768px) {
+            .delivery-details {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot active"></div>
+                    <span>Online</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Earnings Card -->
+    <div class="earnings-card">
+        <div class="earnings-amount">1,250 TND</div>
+        <div class="earnings-label">This Month's Earnings</div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">45</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">4.9★</div>
+            <div class="stat-label">Rating</div>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="map-section">
+        <div class="map-placeholder">
+            <i class="fas fa-map-marked-alt"></i>
+            <div class="font-semibold">Live Route Tracking</div>
+            <div class="text-sm text-muted">Map integration available</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab(0)">
+            <i class="fas fa-clock"></i> Pending
+        </div>
+        <div class="tab" onclick="switchTab(1)">
+            <i class="fas fa-truck"></i> Active
+        </div>
+        <div class="tab" onclick="switchTab(2)">
+            <i class="fas fa-check-circle"></i> Completed
+        </div>
+    </div>
+
+    <!-- Tab Content: Pending Deliveries -->
+    <div class="tab-content active" id="tab-pending">
+        <div class="section-header">
+            <h2 class="section-title">Pending Deliveries</h2>
+        </div>
+        <div class="deliveries-list">
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div class="delivery-id">DEL-2025-5678</div>
+                        <div class="delivery-date">Scheduled: Oct 24, 2025</div>
+                    </div>
+                    <span class="badge badge-pending">New Request</span>
+                </div>
+                <div class="delivery-route">
+                    <div class="route-item">
+                        <div class="route-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Ahmed's Farm</div>
+                            <div class="route-address">Nabeul, Tunisia</div>
+                        </div>
+                    </div>
+                    <div class="route-item">
+                        <div class="route-icon destination">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Ali's Market</div>
+                            <div class="route-address">Tunis, Tunisia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value">65 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight</div>
+                        <div class="detail-value">150 kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment</div>
+                        <div class="detail-value">85 TND</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">2.5 hrs</div>
+                    </div>
+                </div>
+                <div class="delivery-actions">
+                    <button class="btn btn-primary btn-sm" onclick="acceptDelivery('DEL-2025-5678')">
+                        <i class="fas fa-check"></i> Accept
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="declineDelivery('DEL-2025-5678')">
+                        <i class="fas fa-times"></i> Decline
+                    </button>
+                </div>
+            </div>
+
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div class="delivery-id">DEL-2025-5679</div>
+                        <div class="delivery-date">Scheduled: Oct 25, 2025</div>
+                    </div>
+                    <span class="badge badge-pending">New Request</span>
+                </div>
+                <div class="delivery-route">
+                    <div class="route-item">
+                        <div class="route-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Fatma's Orchard</div>
+                            <div class="route-address">Sfax, Tunisia</div>
+                        </div>
+                    </div>
+                    <div class="route-item">
+                        <div class="route-icon destination">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Central Market</div>
+                            <div class="route-address">Sousse, Tunisia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value">120 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight</div>
+                        <div class="detail-value">200 kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment</div>
+                        <div class="detail-value">150 TND</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">3 hrs</div>
+                    </div>
+                </div>
+                <div class="delivery-actions">
+                    <button class="btn btn-primary btn-sm" onclick="acceptDelivery('DEL-2025-5679')">
+                        <i class="fas fa-check"></i> Accept
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="declineDelivery('DEL-2025-5679')">
+                        <i class="fas fa-times"></i> Decline
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Active Deliveries -->
+    <div class="tab-content" id="tab-active">
+        <div class="section-header">
+            <h2 class="section-title">Active Deliveries</h2>
+        </div>
+        <div class="deliveries-list">
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div class="delivery-id">DEL-2025-5456</div>
+                        <div class="delivery-date">Started: Oct 23, 2025</div>
+                    </div>
+                    <span class="badge badge-active">In Progress</span>
+                </div>
+                <div class="delivery-route">
+                    <div class="route-item">
+                        <div class="route-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Mohamed's Field</div>
+                            <div class="route-address">Kairouan, Tunisia</div>
+                        </div>
+                    </div>
+                    <div class="route-item">
+                        <div class="route-icon destination">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Fresh Market</div>
+                            <div class="route-address">Monastir, Tunisia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value">45 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight</div>
+                        <div class="detail-value">100 kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment</div>
+                        <div class="detail-value">60 TND</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Progress</div>
+                        <div class="detail-value">65%</div>
+                    </div>
+                </div>
+                <div class="delivery-actions">
+                    <button class="btn btn-success btn-sm" onclick="markDelivered('DEL-2025-5456')">
+                        <i class="fas fa-check-circle"></i> Mark Delivered
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="viewRoute('DEL-2025-5456')">
+                        <i class="fas fa-route"></i> View Route
+                    </button>
+                </div>
+            </div>
+
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div class="delivery-id">DEL-2025-5457</div>
+                        <div class="delivery-date">Started: Oct 23, 2025</div>
+                    </div>
+                    <span class="badge badge-active">In Progress</span>
+                </div>
+                <div class="delivery-route">
+                    <div class="route-item">
+                        <div class="route-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Salah's Farm</div>
+                            <div class="route-address">Jendouba, Tunisia</div>
+                        </div>
+                    </div>
+                    <div class="route-item">
+                        <div class="route-icon destination">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Wholesale Market</div>
+                            <div class="route-address">Bizerte, Tunisia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value">80 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight</div>
+                        <div class="detail-value">180 kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment</div>
+                        <div class="detail-value">120 TND</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Progress</div>
+                        <div class="detail-value">30%</div>
+                    </div>
+                </div>
+                <div class="delivery-actions">
+                    <button class="btn btn-success btn-sm" onclick="markDelivered('DEL-2025-5457')">
+                        <i class="fas fa-check-circle"></i> Mark Delivered
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="viewRoute('DEL-2025-5457')">
+                        <i class="fas fa-route"></i> View Route
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Completed Deliveries -->
+    <div class="tab-content" id="tab-completed">
+        <div class="section-header">
+            <h2 class="section-title">Completed Deliveries</h2>
+        </div>
+        <div class="deliveries-list">
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div class="delivery-id">DEL-2025-5234</div>
+                        <div class="delivery-date">Completed: Oct 22, 2025</div>
+                    </div>
+                    <span class="badge badge-completed">Delivered</span>
+                </div>
+                <div class="delivery-route">
+                    <div class="route-item">
+                        <div class="route-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Nadia's Grove</div>
+                            <div class="route-address">Monastir, Tunisia</div>
+                        </div>
+                    </div>
+                    <div class="route-item">
+                        <div class="route-icon destination">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">City Market</div>
+                            <div class="route-address">Tunis, Tunisia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value">140 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight</div>
+                        <div class="detail-value">250 kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment</div>
+                        <div class="detail-value">180 TND</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rating</div>
+                        <div class="detail-value">★★★★★</div>
+                    </div>
+                </div>
+                <div class="delivery-actions">
+                    <button class="btn btn-outline btn-sm" onclick="viewDetails('DEL-2025-5234')">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div class="delivery-id">DEL-2025-5123</div>
+                        <div class="delivery-date">Completed: Oct 20, 2025</div>
+                    </div>
+                    <span class="badge badge-completed">Delivered</span>
+                </div>
+                <div class="delivery-route">
+                    <div class="route-item">
+                        <div class="route-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Ahmed's Farm</div>
+                            <div class="route-address">Nabeul, Tunisia</div>
+                        </div>
+                    </div>
+                    <div class="route-item">
+                        <div class="route-icon destination">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="route-info">
+                            <div class="route-location">Local Market</div>
+                            <div class="route-address">Hammamet, Tunisia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value">25 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight</div>
+                        <div class="detail-value">80 kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment</div>
+                        <div class="detail-value">45 TND</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rating</div>
+                        <div class="detail-value">★★★★☆</div>
+                    </div>
+                </div>
+                <div class="delivery-actions">
+                    <button class="btn btn-outline btn-sm" onclick="viewDetails('DEL-2025-5123')">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fas fa-truck"></i>
+            <span>Deliveries</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        function switchTab(index) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.tab-content')[index].classList.add('active');
+        }
+
+        function acceptDelivery(deliveryId) {
+            if (confirm('Accept this delivery request?')) {
+                alert(`Delivery ${deliveryId} accepted!`);
+                // Here you would update the UI and send request to backend
+                switchTab(1); // Switch to active tab
+            }
+        }
+
+        function declineDelivery(deliveryId) {
+            if (confirm('Decline this delivery request?')) {
+                alert(`Delivery ${deliveryId} declined.`);
+                // Here you would update the UI and send request to backend
+            }
+        }
+
+        function markDelivered(deliveryId) {
+            if (confirm('Mark this delivery as completed?')) {
+                alert(`Delivery ${deliveryId} marked as delivered!`);
+                // Here you would update the UI and send request to backend
+                switchTab(2); // Switch to completed tab
+            }
+        }
+
+        function viewRoute(deliveryId) {
+            alert(`Opening route for delivery ${deliveryId}...`);
+            // Here you would open a map or route planning interface
+        }
+
+        function viewDetails(deliveryId) {
+            alert(`Showing details for delivery ${deliveryId}...`);
+            // Here you would show detailed information about the delivery
+        }
+
+        // Auto-refresh for active deliveries (simulate real-time updates)
+        setInterval(() => {
+            // This would typically fetch updates from the server
+            console.log('Checking for delivery updates...');
+        }, 30000); // Check every 30 seconds
+
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

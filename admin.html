@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Admin-specific styles */
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+        }
+        
+        .admin-stat-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--color-primary);
+        }
+        
+        .admin-stat-card.users::before {
+            background: var(--color-info);
+        }
+        
+        .admin-stat-card.products::before {
+            background: var(--color-success);
+        }
+        
+        .admin-stat-card.orders::before {
+            background: var(--color-warning);
+        }
+        
+        .admin-stat-card.revenue::before {
+            background: var(--color-accent);
+        }
+        
+        .admin-stat-value {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .admin-stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .admin-stat-change {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+        
+        .admin-stat-change.positive {
+            color: var(--color-success);
+        }
+        
+        .admin-stat-change.negative {
+            color: var(--color-danger);
+        }
+        
+        .admin-tabs {
+            display: flex;
+            background: var(--color-surface);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+        }
+        
+        .admin-tab {
+            flex: 1;
+            padding: var(--spacing-md);
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            color: var(--color-muted);
+            transition: all var(--transition-normal);
+            white-space: nowrap;
+        }
+        
+        .admin-tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+        
+        .admin-tab:hover {
+            color: var(--color-primary);
+        }
+        
+        .admin-content {
+            padding: var(--spacing-md);
+        }
+        
+        .data-table {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .table-header {
+            background: var(--color-bg);
+            padding: var(--spacing-md);
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .table-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+        
+        .table-content {
+            overflow-x: auto;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table th {
+            background: var(--color-bg);
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+        
+        .table td {
+            font-size: var(--font-size-sm);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+        
+        .status-pending {
+            background: #FFF3E0;
+            color: var(--color-warning);
+        }
+        
+        .status-suspended {
+            background: #FFEBEE;
+            color: var(--color-danger);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-icon.edit {
+            background: #E3F2FD;
+            color: var(--color-info);
+        }
+        
+        .btn-icon.delete {
+            background: #FFEBEE;
+            color: var(--color-danger);
+        }
+        
+        .btn-icon.view {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+        
+        .btn-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .chart-placeholder i {
+            font-size: 48px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin: var(--spacing-md);
+        }
+        
+        .quick-action-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .quick-action-icon {
+            font-size: 32px;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .quick-action-desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+        
+        @media (min-width: 768px) {
+            .admin-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn Admin
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">12</span>
+                </div>
+                <div class="flex items-center gap-sm">
+                    <div class="user-avatar">AD</div>
+                    <span style="font-weight: 600;">Admin</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Admin Stats -->
+    <div class="admin-stats">
+        <div class="admin-stat-card users">
+            <div class="admin-stat-value">1,247</div>
+            <div class="admin-stat-label">Total Users</div>
+            <div class="admin-stat-change positive">
+                <i class="fas fa-arrow-up"></i> +12% this month
+            </div>
+        </div>
+        <div class="admin-stat-card products">
+            <div class="admin-stat-value">3,456</div>
+            <div class="admin-stat-label">Active Products</div>
+            <div class="admin-stat-change positive">
+                <i class="fas fa-arrow-up"></i> +8% this month
+            </div>
+        </div>
+        <div class="admin-stat-card orders">
+            <div class="admin-stat-value">892</div>
+            <div class="admin-stat-label">Orders This Month</div>
+            <div class="admin-stat-change positive">
+                <i class="fas fa-arrow-up"></i> +15% this month
+            </div>
+        </div>
+        <div class="admin-stat-card revenue">
+            <div class="admin-stat-value">45,230 TND</div>
+            <div class="admin-stat-label">Revenue This Month</div>
+            <div class="admin-stat-change positive">
+                <i class="fas fa-arrow-up"></i> +22% this month
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <div class="quick-action-card" onclick="alert('User management would open')">
+            <div class="quick-action-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="quick-action-title">Manage Users</div>
+            <div class="quick-action-desc">View and manage user accounts</div>
+        </div>
+        <div class="quick-action-card" onclick="alert('Product approval would open')">
+            <div class="quick-action-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="quick-action-title">Approve Products</div>
+            <div class="quick-action-desc">Review pending product listings</div>
+        </div>
+        <div class="quick-action-card" onclick="alert('Reports would open')">
+            <div class="quick-action-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="quick-action-title">View Reports</div>
+            <div class="quick-action-desc">Analytics and insights</div>
+        </div>
+        <div class="quick-action-card" onclick="alert('Settings would open')">
+            <div class="quick-action-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="quick-action-title">System Settings</div>
+            <div class="quick-action-desc">Configure platform settings</div>
+        </div>
+    </div>
+
+    <!-- Admin Tabs -->
+    <div class="admin-tabs">
+        <div class="admin-tab active" onclick="switchAdminTab(0)">
+            <i class="fas fa-users"></i> Users
+        </div>
+        <div class="admin-tab" onclick="switchAdminTab(1)">
+            <i class="fas fa-leaf"></i> Products
+        </div>
+        <div class="admin-tab" onclick="switchAdminTab(2)">
+            <i class="fas fa-shopping-cart"></i> Orders
+        </div>
+        <div class="admin-tab" onclick="switchAdminTab(3)">
+            <i class="fas fa-chart-line"></i> Analytics
+        </div>
+    </div>
+
+    <!-- Tab Content: Users -->
+    <div class="admin-content">
+        <div class="admin-tab-content active" id="admin-users">
+            <div class="data-table">
+                <div class="table-header">
+                    <div class="table-title">User Management</div>
+                    <div class="table-subtitle">Manage user accounts and permissions</div>
+                </div>
+                <div class="table-content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-sm">
+                                        <div class="user-avatar">AH</div>
+                                        <div>
+                                            <div style="font-weight: 600;">Ahmed Hassan</div>
+                                            <div style="font-size: var(--font-size-xs); color: var(--color-muted);">ahmed@email.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Farmer</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td>Oct 15, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewUser('ahmed')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="editUser('ahmed')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <div class="btn-icon delete" onclick="deleteUser('ahmed')">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-sm">
+                                        <div class="user-avatar">FM</div>
+                                        <div>
+                                            <div style="font-weight: 600;">Fatma Mohamed</div>
+                                            <div style="font-size: var(--font-size-xs); color: var(--color-muted);">fatma@email.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Vendor</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td>Oct 20, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewUser('fatma')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="editUser('fatma')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <div class="btn-icon delete" onclick="deleteUser('fatma')">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-sm">
+                                        <div class="user-avatar">AL</div>
+                                        <div>
+                                            <div style="font-weight: 600;">Ali Ben Salah</div>
+                                            <div style="font-size: var(--font-size-xs); color: var(--color-muted);">ali@email.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Transporter</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td>Oct 10, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewUser('ali')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="editUser('ali')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <div class="btn-icon delete" onclick="deleteUser('ali')">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Products -->
+        <div class="admin-tab-content" id="admin-products">
+            <div class="data-table">
+                <div class="table-header">
+                    <div class="table-title">Product Management</div>
+                    <div class="table-subtitle">Review and approve product listings</div>
+                </div>
+                <div class="table-content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Farmer</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-sm">
+                                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 20px;">🍅</div>
+                                        <div>
+                                            <div style="font-weight: 600;">Fresh Tomatoes</div>
+                                            <div style="font-size: var(--font-size-xs); color: var(--color-muted);">Vegetables</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Ahmed Hassan</td>
+                                <td><span class="status-badge status-active">Approved</span></td>
+                                <td>12 TND/kg</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewProduct('tomatoes')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="editProduct('tomatoes')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-sm">
+                                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 20px;">🫒</div>
+                                        <div>
+                                            <div style="font-weight: 600;">Organic Olives</div>
+                                            <div style="font-size: var(--font-size-xs); color: var(--color-muted);">Fruits</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Fatma Mohamed</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td>25 TND/kg</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewProduct('olives')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="approveProduct('olives')">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Orders -->
+        <div class="admin-tab-content" id="admin-orders">
+            <div class="data-table">
+                <div class="table-header">
+                    <div class="table-title">Order Management</div>
+                    <div class="table-subtitle">Monitor and manage all orders</div>
+                </div>
+                <div class="table-content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-2025-1234</td>
+                                <td>Ali's Market</td>
+                                <td>840 TND</td>
+                                <td><span class="status-badge status-active">In Transit</span></td>
+                                <td>Oct 20, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewOrder('ORD-2025-1234')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="updateOrder('ORD-2025-1234')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-2025-1189</td>
+                                <td>Central Market</td>
+                                <td>500 TND</td>
+                                <td><span class="status-badge status-pending">Processing</span></td>
+                                <td>Oct 22, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <div class="btn-icon view" onclick="viewOrder('ORD-2025-1189')">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                        <div class="btn-icon edit" onclick="updateOrder('ORD-2025-1189')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Analytics -->
+        <div class="admin-tab-content" id="admin-analytics">
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-line"></i>
+                <div style="font-weight: 600;">Revenue Analytics</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Chart integration available</div>
+            </div>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-pie"></i>
+                <div style="font-weight: 600;">User Distribution</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Pie chart integration available</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fas fa-cog"></i>
+            <span>Admin</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        function switchAdminTab(index) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelectorAll('.admin-tab')[index].classList.add('active');
+            document.querySelectorAll('.admin-tab-content')[index].classList.add('active');
+        }
+
+        function viewUser(userId) {
+            alert(`Viewing user details for ${userId}`);
+        }
+
+        function editUser(userId) {
+            alert(`Editing user ${userId}`);
+        }
+
+        function deleteUser(userId) {
+            if (confirm(`Delete user ${userId}? This action cannot be undone.`)) {
+                alert(`User ${userId} deleted successfully!`);
+            }
+        }
+
+        function viewProduct(productId) {
+            alert(`Viewing product details for ${productId}`);
+        }
+
+        function editProduct(productId) {
+            alert(`Editing product ${productId}`);
+        }
+
+        function approveProduct(productId) {
+            if (confirm(`Approve product ${productId}?`)) {
+                alert(`Product ${productId} approved successfully!`);
+            }
+        }
+
+        function viewOrder(orderId) {
+            alert(`Viewing order details for ${orderId}`);
+        }
+
+        function updateOrder(orderId) {
+            alert(`Updating order ${orderId}`);
+        }
+
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

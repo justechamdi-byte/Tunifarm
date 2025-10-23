@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Vendor-specific styles */
+        .search-container {
+            padding: var(--spacing-md);
+            background: var(--color-surface);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            gap: var(--spacing-sm);
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: none;
+            font-family: var(--font-primary);
+            font-size: var(--font-size-base);
+            outline: none;
+        }
+        
+        .filter-chips {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-xs);
+        }
+        
+        .filter-chips::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--color-bg);
+            font-size: var(--font-size-sm);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .chip.active {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        
+        .products-grid {
+            padding: var(--spacing-md);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+        }
+        
+        .product-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            position: relative;
+        }
+        
+        .wishlist-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .wishlist-btn:hover {
+            background: var(--color-danger);
+            color: #fff;
+        }
+        
+        .product-content {
+            padding: var(--spacing-md);
+        }
+        
+        .product-title {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .product-farmer {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .product-price {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .rating {
+            color: var(--color-accent);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: var(--z-modal);
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-header {
+            position: relative;
+            height: 250px;
+            background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+        
+        .modal-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .modal-farmer {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-bg);
+        }
+        
+        .farmer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .info-label {
+            color: var(--color-muted);
+            font-size: var(--font-size-base);
+        }
+        
+        .info-value {
+            font-weight: 600;
+        }
+        
+        .description {
+            margin: var(--spacing-lg) 0;
+            line-height: 1.8;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .orders-list {
+            padding: var(--spacing-md);
+        }
+        
+        .order-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .order-id {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+        }
+        
+        .order-items {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) 0;
+            font-size: var(--font-size-base);
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-bg);
+        }
+        
+        .order-total {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .modal-content {
+                border-radius: var(--radius-lg);
+                max-width: 600px;
+                max-height: 90vh;
+            }
+            .modal {
+                align-items: center;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">2</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Search Container -->
+    <div class="search-container">
+        <div class="search-bar">
+            <i class="fas fa-search" style="color: var(--color-muted);"></i>
+            <input type="text" class="search-input" placeholder="Search products...">
+            <i class="fas fa-sliders-h" style="color: var(--color-muted); cursor: pointer;"></i>
+        </div>
+        <div class="filter-chips">
+            <div class="chip active">All</div>
+            <div class="chip">Vegetables</div>
+            <div class="chip">Fruits</div>
+            <div class="chip">Grains</div>
+            <div class="chip">Dairy</div>
+            <div class="chip">Poultry</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab(0)">
+            <i class="fas fa-th-large"></i> Browse
+        </div>
+        <div class="tab" onclick="switchTab(1)">
+            <i class="fas fa-shopping-bag"></i> My Orders
+        </div>
+    </div>
+
+    <!-- Tab Content: Browse Products -->
+    <div class="tab-content active" id="tab-browse">
+        <div class="products-grid">
+            <div class="product-card" onclick="openProductDetail()">
+                <div class="product-image">
+                    🍅
+                    <div class="wishlist-btn">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <div class="product-title">Fresh Tomatoes</div>
+                    <div class="product-farmer"><i class="fas fa-user"></i> Ahmed's Farm</div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Nabeul</span>
+                        <span class="rating">★★★★★ 4.8</span>
+                    </div>
+                    <div class="product-price">12 TND/kg</div>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="event.stopPropagation(); addToCart('tomatoes', 12, 'Fresh Tomatoes')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openProductDetail()">
+                <div class="product-image">
+                    🫒
+                    <div class="wishlist-btn">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <div class="product-title">Organic Olives</div>
+                    <div class="product-farmer"><i class="fas fa-user"></i> Fatma's Orchard</div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Sfax</span>
+                        <span class="rating">★★★★★ 5.0</span>
+                    </div>
+                    <div class="product-price">25 TND/kg</div>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="event.stopPropagation(); addToCart('olives', 25, 'Organic Olives')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openProductDetail()">
+                <div class="product-image">
+                    🥕
+                    <div class="wishlist-btn">
+                        <i class="fas fa-heart" style="color: var(--color-danger);"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <div class="product-title">Fresh Carrots</div>
+                    <div class="product-farmer"><i class="fas fa-user"></i> Mohamed's Field</div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Kairouan</span>
+                        <span class="rating">★★★★☆ 4.5</span>
+                    </div>
+                    <div class="product-price">8 TND/kg</div>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="event.stopPropagation(); addToCart('carrots', 8, 'Fresh Carrots')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openProductDetail()">
+                <div class="product-image">
+                    🌽
+                    <div class="wishlist-btn">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <div class="product-title">Sweet Corn</div>
+                    <div class="product-farmer"><i class="fas fa-user"></i> Ali's Farm</div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Bizerte</span>
+                        <span class="rating">★★★★★ 4.9</span>
+                    </div>
+                    <div class="product-price">6 TND/kg</div>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="event.stopPropagation(); addToCart('corn', 6, 'Sweet Corn')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openProductDetail()">
+                <div class="product-image">
+                    🥔
+                    <div class="wishlist-btn">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <div class="product-title">Potatoes</div>
+                    <div class="product-farmer"><i class="fas fa-user"></i> Salah's Farm</div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Jendouba</span>
+                        <span class="rating">★★★★☆ 4.6</span>
+                    </div>
+                    <div class="product-price">5 TND/kg</div>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="event.stopPropagation(); addToCart('potatoes', 5, 'Potatoes')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openProductDetail()">
+                <div class="product-image">
+                    🍊
+                    <div class="wishlist-btn">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <div class="product-title">Citrus Fruits</div>
+                    <div class="product-farmer"><i class="fas fa-user"></i> Nadia's Grove</div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Monastir</span>
+                        <span class="rating">★★★★★ 4.7</span>
+                    </div>
+                    <div class="product-price">15 TND/kg</div>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="event.stopPropagation(); addToCart('citrus', 15, 'Citrus Fruits')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: My Orders -->
+    <div class="tab-content" id="tab-orders">
+        <div class="orders-list">
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-id">Order #ORD-2025-1234</div>
+                    <span class="badge badge-info">In Transit</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        🍅 Fresh Tomatoes - 50kg × 12 TND = 600 TND
+                    </div>
+                    <div class="order-item">
+                        🥕 Fresh Carrots - 30kg × 8 TND = 240 TND
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Ordered: Oct 20, 2025</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Delivery: Oct 25, 2025</div>
+                    </div>
+                    <div class="order-total">840 TND</div>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-id">Order #ORD-2025-1189</div>
+                    <span class="badge badge-warning">Processing</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        🫒 Organic Olives - 20kg × 25 TND = 500 TND
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Ordered: Oct 22, 2025</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Delivery: Oct 27, 2025</div>
+                    </div>
+                    <div class="order-total">500 TND</div>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-id">Order #ORD-2025-1067</div>
+                    <span class="badge badge-success">Completed</span>
+                </div>
+                <div class="order-items">
+                    <div class="order-item">
+                        🌽 Sweet Corn - 100kg × 6 TND = 600 TND
+                    </div>
+                    <div class="order-item">
+                        🥔 Potatoes - 80kg × 5 TND = 400 TND
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Ordered: Oct 15, 2025</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">Delivered: Oct 18, 2025</div>
+                    </div>
+                    <div class="order-total">1000 TND</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                🍅
+                <div class="close-modal" onclick="closeProductDetail()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h2 class="modal-title">Fresh Tomatoes</h2>
+                <div class="modal-farmer">
+                    <div class="farmer-avatar">AH</div>
+                    <div>
+                        <div style="font-weight: 600;">Ahmed's Farm</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-muted);">
+                            <span class="rating">★★★★★</span> 4.8 (234 reviews)
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Price</span>
+                    <span class="info-value" style="color: var(--color-primary); font-size: var(--font-size-xl);">12 TND/kg</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Available</span>
+                    <span class="info-value">150kg</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Location</span>
+                    <span class="info-value"><i class="fas fa-map-marker-alt"></i> Nabeul, Tunisia</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Category</span>
+                    <span class="info-value">Vegetables</span>
+                </div>
+                <div class="description">
+                    <h3 style="font-size: var(--font-size-md); margin-bottom: var(--spacing-sm);">Description</h3>
+                    <p style="color: var(--color-muted); font-size: var(--font-size-base);">
+                        Premium quality fresh tomatoes grown organically in the fertile lands of Nabeul. 
+                        Hand-picked at peak ripeness to ensure maximum flavor and nutritional value. 
+                        Perfect for salads, cooking, and processing. Available for immediate delivery.
+                    </p>
+                </div>
+                <div style="padding: var(--spacing-md); background: var(--color-bg); border-radius: var(--radius-md); margin: var(--spacing-md) 0;">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                        <i class="fas fa-info-circle" style="color: var(--color-primary);"></i>
+                        <strong>Delivery Information</strong>
+                    </div>
+                    <ul style="margin-left: var(--spacing-lg); font-size: var(--font-size-base); color: var(--color-muted);">
+                        <li>Fast delivery within 2-3 days</li>
+                        <li>Minimum order: 10kg</li>
+                        <li>Free delivery on orders over 50kg</li>
+                    </ul>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" style="flex: 1;" onclick="toggleWishlist()">
+                        <i class="far fa-heart"></i> Save
+                    </button>
+                    <button class="btn btn-primary" style="flex: 2;" onclick="placeOrder()">
+                        <i class="fas fa-shopping-cart"></i> Order Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fas fa-leaf"></i>
+            <span>Products</span>
+        </a>
+        <a href="cart.html" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        function switchTab(index) {
+            document.querySelectorAll('.tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.tab-content').forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+        }
+
+        function openProductDetail() {
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeProductDetail() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        function addToCart(productId, price, productName) {
+            // Store cart data in localStorage
+            let cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            
+            if (cart[productId]) {
+                cart[productId].quantity += 1;
+            } else {
+                cart[productId] = {
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                };
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+            alert(`${productName} added to cart!`);
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        function toggleWishlist() {
+            alert('Added to wishlist!');
+        }
+
+        function placeOrder() {
+            alert('Order placed successfully!');
+            closeProductDetail();
+        }
+
+        // Close modal on background click
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if(e.target === this) {
+                closeProductDetail();
+            }
+        });
+
+        // Filter chips
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Wishlist toggle
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const icon = this.querySelector('i');
+                icon.classList.toggle('far');
+                icon.classList.toggle('fas');
+                if(icon.classList.contains('fas')) {
+                    icon.style.color = 'var(--color-danger)';
+                } else {
+                    icon.style.color = '';
+                }
+            });
+        });
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>
