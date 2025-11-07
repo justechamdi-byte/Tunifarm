@@ -75,6 +75,14 @@
             padding: var(--spacing-md);
         }
         
+        .order-tab-content {
+            display: none;
+        }
+        
+        .order-tab-content.active {
+            display: block;
+        }
+        
         .order-card {
             background: var(--color-surface);
             border-radius: var(--radius-md);
@@ -285,7 +293,7 @@
 
     <!-- Orders Header -->
     <div class="orders-header">
-        <h1 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--spacing-md);">My Orders</h1>
+        <h1 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--spacing-md);" id="ordersTitle">My Orders</h1>
         <div class="orders-stats">
             <div class="order-stat-card">
                 <div class="order-stat-value">12</div>
@@ -591,34 +599,29 @@
     </div>
 
     <!-- Footer Navigation -->
-    <nav class="footer-nav">
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="vendor.html" class="nav-item">
-            <i class="fas fa-leaf"></i>
-            <span>Products</span>
-        </a>
-        <a href="orders.html" class="nav-item active">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Orders</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
+    <nav class="footer-nav" id="footerNav">
+        <!-- Footer will be dynamically generated based on profile -->
     </nav>
 
     <script>
         function switchOrderTab(index) {
-            // Remove active class from all tabs and content
-            document.querySelectorAll('.order-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.order-tab-content').forEach(content => content.classList.remove('active'));
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.order-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
             
-            // Add active class to selected tab and content
-            document.querySelectorAll('.order-tab')[index].classList.add('active');
-            document.querySelectorAll('.order-tab-content')[index].classList.add('active');
+            // Remove active class from all tab content
+            const tabContents = document.querySelectorAll('.order-tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            if (tabs[index]) {
+                tabs[index].classList.add('active');
+            }
+            
+            // Add active class to corresponding tab content
+            if (tabContents[index]) {
+                tabContents[index].classList.add('active');
+            }
         }
 
         function trackOrder(orderId) {
@@ -659,9 +662,269 @@
             }
         }
 
-        // Initialize cart badge on page load
+        // Profile-based order filtering - ALWAYS check on page load
+        function filterOrdersByProfile() {
+            // Always read from localStorage - preserve existing profile
+            let selectedProfile = localStorage.getItem('selectedProfile');
+            
+            // Only set default if profile is completely missing
+            // But prefer to keep existing profile if it exists
+            if (!selectedProfile) {
+                // Default to farmer if no profile set
+                selectedProfile = 'farmer';
+                localStorage.setItem('selectedProfile', selectedProfile);
+            }
+            
+            const ordersTitle = document.getElementById('ordersTitle');
+            
+            if (selectedProfile === 'farmer') {
+                // Show only received orders (orders where farmer is the seller)
+                if (ordersTitle) {
+                    ordersTitle.textContent = 'Received Orders';
+                }
+                // Filter orders - hide orders where farmer is buyer, show only where farmer is seller
+                filterFarmerOrders();
+            } else if (selectedProfile === 'vendor') {
+                // Show orders placed by vendor (orders where vendor is buyer)
+                if (ordersTitle) {
+                    ordersTitle.textContent = 'My Orders';
+                }
+                filterVendorOrders();
+            } else if (selectedProfile === 'transporter') {
+                // Show orders assigned to transporter
+                if (ordersTitle) {
+                    ordersTitle.textContent = 'Assigned Orders';
+                }
+                filterTransporterOrders();
+            }
+        }
+
+        // Order data with farmer information
+        const ordersData = {
+            'ORD-2025-1234': { 
+                farmerId: 'farmer1', 
+                farmerName: "Ahmed's Farm",
+                items: ['tomatoes', 'carrots'],
+                status: 'shipped'
+            },
+            'ORD-2025-1189': { 
+                farmerId: 'farmer2', 
+                farmerName: "Fatma's Orchard",
+                items: ['olives'],
+                status: 'processing'
+            },
+            'ORD-2025-1067': { 
+                farmerId: 'farmer3', 
+                farmerName: "Ali's Farm",
+                items: ['corn', 'potatoes'],
+                status: 'delivered'
+            }
+        };
+
+        // Current user profile (would come from auth in real app)
+        const currentUserId = 'farmer1'; // Default farmer ID
+
+        function filterFarmerOrders() {
+            // Farmer receives orders for their products
+            // Show only orders where farmer is the seller
+            const orderCards = document.querySelectorAll('.order-card');
+            orderCards.forEach(card => {
+                const orderIdElement = card.querySelector('.order-id');
+                if (!orderIdElement) {
+                    card.style.display = 'none';
+                    return;
+                }
+                
+                const orderId = orderIdElement.textContent.trim();
+                // Extract order ID (e.g., "ORD-2025-1234" from "Order #ORD-2025-1234")
+                const match = orderId.match(/ORD-\d+-\d+/);
+                const extractedOrderId = match ? match[0] : null;
+                
+                if (extractedOrderId && ordersData[extractedOrderId]) {
+                    const orderData = ordersData[extractedOrderId];
+                    // Show order if it belongs to current farmer
+                    // In production: check if orderData.farmerId === currentUserId
+                    // For demo: show orders that have farmer products (tomatoes, olives, carrots, corn from farmer1)
+                    const currentFarmerProducts = ['tomatoes', 'carrots', 'olives', 'corn'];
+                    const hasCurrentFarmerProduct = orderData.items.some(item => 
+                        currentFarmerProducts.includes(item.toLowerCase())
+                    );
+                    
+                    if (hasCurrentFarmerProduct || orderData.farmerId === currentUserId) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                } else {
+                    // If order data not found, show by default for demo
+                    card.style.display = 'block';
+                }
+            });
+        }
+
+        function filterVendorOrders() {
+            // Vendor sees orders they placed
+            const orderCards = document.querySelectorAll('.order-card');
+            orderCards.forEach(card => {
+                // In real app, check if order.buyerId === currentVendorId
+                card.style.display = 'block';
+            });
+        }
+
+        function filterTransporterOrders() {
+            // Transporter sees orders assigned to them
+            const orderCards = document.querySelectorAll('.order-card');
+            orderCards.forEach(card => {
+                // In real app, check if order.transporterId === currentTransporterId
+                // For demo, show only "In Transit" orders
+                const status = card.querySelector('.order-status');
+                if (status && status.textContent.includes('Transit')) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Render footer navigation based on profile
+        function renderFooterNavigation(currentPage = '') {
+            const footerNav = document.getElementById('footerNav');
+            if (!footerNav) return;
+            
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+            
+            let footerHTML = '';
+            
+            if (selectedProfile === 'farmer') {
+                // Farmer footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'vendor') {
+                // Vendor footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="vendor.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'transporter') {
+                // Transporter footer: Home, Deliveries, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transporter.html" class="nav-item ${currentPage === 'deliveries' ? 'active' : ''}">
+                        <i class="fas fa-truck"></i>
+                        <span>Deliveries</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else {
+                // Default footer (farmer)
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            }
+            
+            footerNav.innerHTML = footerHTML;
+        }
+
+        // Initialize cart badge and filter orders on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tabs - ensure only first tab is visible
+            const tabs = document.querySelectorAll('.order-tab');
+            const tabContents = document.querySelectorAll('.order-tab-content');
+            
+            // Remove active from all tabs and content
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Activate first tab (All Orders)
+            if (tabs[0]) tabs[0].classList.add('active');
+            if (tabContents[0]) tabContents[0].classList.add('active');
+            
+            // Update cart badge
             updateCartBadge();
+            
+            // Always filter orders based on current profile
+            if (typeof filterOrdersByProfile === 'function') {
+                filterOrdersByProfile();
+            }
+            
+            // Render footer based on profile
+            if (typeof renderFooterNavigation === 'function') {
+                renderFooterNavigation('orders');
+            }
+        });
+        
+        // Also check when page becomes visible (when user returns from another tab/page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                filterOrdersByProfile();
+            }
+        });
+        
+        // Also check profile when page gains focus (user returns to this tab)
+        window.addEventListener('focus', function() {
+            filterOrdersByProfile();
+        });
+        
+        // Listen for profile changes from other tabs/windows
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'selectedProfile') {
+                filterOrdersByProfile();
+            }
         });
     </script>
 </body>

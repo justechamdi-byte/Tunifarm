@@ -247,13 +247,13 @@
             <h1>🌾 Welcome to AgriTn</h1>
             <p>Tunisia's Premier Agricultural Marketplace<br>Connecting Farmers, Vendors & Transporters</p>
             <div class="hero-buttons">
-                <a href="farmer.html" class="btn btn-primary btn-lg">
+                <a href="farmer.html" class="btn btn-primary btn-lg" onclick="setProfileAndNavigate('farmer', 'farmer.html', event)">
                     <i class="fas fa-tractor"></i> Join as Farmer
                 </a>
-                <a href="vendor.html" class="btn btn-outline btn-lg">
+                <a href="vendor.html" class="btn btn-outline btn-lg" onclick="setProfileAndNavigate('vendor', 'vendor.html', event)">
                     <i class="fas fa-store"></i> Join as Vendor
                 </a>
-                <a href="transporter.html" class="btn btn-accent btn-lg">
+                <a href="transporter.html" class="btn btn-accent btn-lg" onclick="setProfileAndNavigate('transporter', 'transporter.html', event)">
                     <i class="fas fa-truck"></i> Join as Transporter
                 </a>
             </div>
@@ -403,6 +403,15 @@
             if (badge) {
                 badge.textContent = totalItems;
             }
+        }
+
+        // Set profile when clicking Join buttons
+        function setProfileAndNavigate(profile, url, event) {
+            event.preventDefault();
+            // Set the profile in localStorage
+            localStorage.setItem('selectedProfile', profile);
+            // Navigate to the page
+            window.location.href = url;
         }
 
         // Initialize cart badge on page load

@@ -643,23 +643,8 @@
     </div>
 
     <!-- Footer Navigation -->
-    <nav class="footer-nav">
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="#" class="nav-item active">
-            <i class="fas fa-leaf"></i>
-            <span>Products</span>
-        </a>
-        <a href="cart.html" class="nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
+    <nav class="footer-nav" id="footerNav">
+        <!-- Footer will be dynamically generated based on profile -->
     </nav>
 
     <script>
@@ -747,9 +732,179 @@
             });
         });
 
-        // Initialize cart badge on page load
+        // Handle Products navigation based on profile
+        function handleProductsNavigation(event) {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'vendor';
+            
+            if (selectedProfile === 'farmer') {
+                event.preventDefault();
+                window.location.href = 'farmer.html';
+                return false;
+            } else if (selectedProfile === 'vendor') {
+                // Stay on vendor.html (default behavior)
+                return true;
+            } else if (selectedProfile === 'transporter') {
+                // Transporter might not have products page
+                event.preventDefault();
+                alert('Products page not available for transporter profile.');
+                return false;
+            }
+        }
+
+        // Update Products link based on profile
+        function updateProductsNavigation() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'vendor';
+            const productsLink = document.getElementById('productsNavLink');
+            
+            if (productsLink) {
+                if (selectedProfile === 'farmer') {
+                    productsLink.href = 'farmer.html';
+                    productsLink.onclick = null; // Remove onclick, use href
+                } else {
+                    productsLink.href = '#';
+                    productsLink.onclick = handleProductsNavigation;
+                }
+            }
+        }
+
+        // Check profile and filter content
+        function checkProfileAndFilter() {
+            let selectedProfile = localStorage.getItem('selectedProfile');
+            
+            // If no profile is set and we're on vendor.html, set it to vendor
+            if (!selectedProfile) {
+                selectedProfile = 'vendor';
+                localStorage.setItem('selectedProfile', selectedProfile);
+            }
+            
+            // Update navigation based on profile
+            updateProductsNavigation();
+        }
+
+        // Render footer navigation based on profile
+        function renderFooterNavigation(currentPage = '') {
+            const footerNav = document.getElementById('footerNav');
+            if (!footerNav) return;
+            
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'vendor';
+            
+            let footerHTML = '';
+            
+            if (selectedProfile === 'farmer') {
+                // Farmer footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'vendor') {
+                // Vendor footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="vendor.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'transporter') {
+                // Transporter footer: Home, Deliveries, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transporter.html" class="nav-item ${currentPage === 'deliveries' ? 'active' : ''}">
+                        <i class="fas fa-truck"></i>
+                        <span>Deliveries</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else {
+                // Default footer (vendor)
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="vendor.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            }
+            
+            footerNav.innerHTML = footerHTML;
+        }
+
+        // Initialize cart badge and profile check on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCartBadge();
+            // Always check profile on page load
+            checkProfileAndFilter();
+            // Render footer based on profile
+            renderFooterNavigation('products');
+        });
+        
+        // Re-render footer when profile changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'selectedProfile') {
+                renderFooterNavigation('products');
+                checkProfileAndFilter();
+            }
+        });
+        
+        // Also check when page becomes visible (when user returns from another tab/page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                checkProfileAndFilter();
+            }
+        });
+        
+        // Listen for profile changes from other tabs/windows
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'selectedProfile') {
+                updateProductsNavigation();
+                checkProfileAndFilter();
+            }
         });
     </script>
 </body>

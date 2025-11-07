@@ -173,9 +173,9 @@
         </div>
     </div>
 
-    <!-- Section Header -->
+        <!-- Section Header -->
     <div class="section-header">
-        <h2 class="section-title">My Products</h2>
+        <h2 class="section-title" id="productsTitle">My Products</h2>
         <button class="btn btn-outline btn-sm" onclick="document.getElementById('filterModal').classList.add('active')">
             <i class="fas fa-filter"></i> Filter
         </button>
@@ -195,7 +195,10 @@
                     <i class="fas fa-eye"></i> 234 views
                 </div>
                 <div class="product-footer">
-                    <div class="product-price">12 TND/kg</div>
+                    <div class="product-price">
+                        <div>12 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">10 TND/kg (50-100kg)</div>
+                    </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('tomatoes')">
                             <i class="fas fa-edit"></i>
@@ -220,7 +223,10 @@
                     <i class="fas fa-eye"></i> 45 views
                 </div>
                 <div class="product-footer">
-                    <div class="product-price">25 TND/kg</div>
+                    <div class="product-price">
+                        <div>25 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">22 TND/kg (50-100kg)</div>
+                    </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('olives')">
                             <i class="fas fa-edit"></i>
@@ -245,7 +251,10 @@
                     <i class="fas fa-eye"></i> 189 views
                 </div>
                 <div class="product-footer">
-                    <div class="product-price">8 TND/kg</div>
+                    <div class="product-price">
+                        <div>8 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">7 TND/kg (50-100kg)</div>
+                    </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('carrots')">
                             <i class="fas fa-edit"></i>
@@ -270,7 +279,10 @@
                     <i class="fas fa-eye"></i> 312 views
                 </div>
                 <div class="product-footer">
-                    <div class="product-price">6 TND/kg</div>
+                    <div class="product-price">
+                        <div>6 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">5 TND/kg (50-100kg)</div>
+                    </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('corn')">
                             <i class="fas fa-edit"></i>
@@ -285,7 +297,7 @@
     </div>
 
     <!-- FAB Button -->
-    <div class="fab" onclick="document.getElementById('addProductModal').classList.add('active')">
+    <div class="fab" onclick="openAddProductModal()">
         <i class="fas fa-plus"></i>
     </div>
 
@@ -293,7 +305,7 @@
     <div class="modal" id="addProductModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Add New Product</h3>
+                <h3 class="modal-title" id="modalTitle">Add New Product</h3>
                 <span class="close-modal" onclick="document.getElementById('addProductModal').classList.remove('active')">
                     <i class="fas fa-times"></i>
                 </span>
@@ -314,8 +326,20 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Price per kg (TND)</label>
-                    <input type="number" class="form-input" placeholder="0.00">
+                    <label class="form-label">Quantity-Based Pricing</label>
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <label style="font-size: var(--font-size-sm); color: var(--color-muted);">Price for 10-49 kg</label>
+                        <input type="number" class="form-input" placeholder="12.00" id="price-tier1" style="margin-top: var(--spacing-xs);">
+                        <span style="font-size: var(--font-size-sm); color: var(--color-muted);">TND / kg</span>
+                    </div>
+                    <div>
+                        <label style="font-size: var(--font-size-sm); color: var(--color-muted);">Price for 50-100 kg</label>
+                        <input type="number" class="form-input" placeholder="10.00" id="price-tier2" style="margin-top: var(--spacing-xs);">
+                        <span style="font-size: var(--font-size-sm); color: var(--color-muted);">TND / kg</span>
+                    </div>
+                    <p style="font-size: var(--font-size-xs); color: var(--color-muted); margin-top: var(--spacing-xs);">
+                        Set different prices based on quantity ranges to encourage bulk orders.
+                    </p>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Available Quantity (kg)</label>
@@ -370,23 +394,8 @@
     </div>
 
     <!-- Footer Navigation -->
-    <nav class="footer-nav">
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="#" class="nav-item active">
-            <i class="fas fa-leaf"></i>
-            <span>Products</span>
-        </a>
-        <a href="orders.html" class="nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Orders</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
+    <nav class="footer-nav" id="footerNav">
+        <!-- Footer will be dynamically generated based on profile -->
     </nav>
 
     <script>
@@ -400,12 +409,90 @@
         });
 
         function addProduct() {
-            alert('Product added successfully!');
+            const priceTier1 = document.getElementById('price-tier1').value;
+            const priceTier2 = document.getElementById('price-tier2').value;
+            
+            if (!priceTier1 || !priceTier2) {
+                alert('Please set both price tiers!');
+                return;
+            }
+            
+            if (editingProductId) {
+                alert('Product updated successfully with quantity-based pricing!');
+                editingProductId = null;
+            } else {
+                alert('Product added successfully with quantity-based pricing!');
+            }
+            
             document.getElementById('addProductModal').classList.remove('active');
+            document.getElementById('modalTitle').textContent = 'Add New Product';
+            // Reset form
+            document.querySelector('#addProductModal form').reset();
         }
 
-        function editProduct(productName) {
-            alert(`Edit ${productName} - This would open the edit form`);
+        let editingProductId = null;
+
+        function openAddProductModal() {
+            editingProductId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Product';
+            document.querySelector('#addProductModal form').reset();
+            document.getElementById('addProductModal').classList.add('active');
+        }
+
+        // Reset modal when closing
+        document.querySelector('#addProductModal .close-modal').addEventListener('click', function() {
+            editingProductId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Product';
+            document.querySelector('#addProductModal form').reset();
+        });
+
+        function editProduct(productId) {
+            editingProductId = productId;
+            // Open edit modal with product data
+            const productData = getProductData(productId);
+            if (productData) {
+                // Update modal title
+                document.getElementById('modalTitle').textContent = 'Edit Product';
+                document.getElementById('addProductModal').classList.add('active');
+                // Populate form with product data
+                const form = document.querySelector('#addProductModal form');
+                if (form) {
+                    const inputs = form.querySelectorAll('input[type="text"]');
+                    if (inputs.length > 0) inputs[0].value = productData.name;
+                    
+                    const selects = form.querySelectorAll('.form-select');
+                    if (selects.length > 0) selects[0].value = productData.category;
+                    
+                    document.getElementById('price-tier1').value = productData.priceTier1 || 12;
+                    document.getElementById('price-tier2').value = productData.priceTier2 || 10;
+                    
+                    const numberInputs = form.querySelectorAll('input[type="number"]');
+                    // Skip price inputs, get quantity input
+                    let quantityInput = null;
+                    for (let input of numberInputs) {
+                        if (input.id !== 'price-tier1' && input.id !== 'price-tier2') {
+                            quantityInput = input;
+                            break;
+                        }
+                    }
+                    if (quantityInput) quantityInput.value = productData.quantity;
+                    
+                    const textarea = form.querySelector('.form-textarea');
+                    if (textarea) textarea.value = productData.description || '';
+                    
+                    if (inputs.length > 1) inputs[1].value = productData.location || '';
+                }
+            }
+        }
+
+        function getProductData(productId) {
+            const products = {
+                tomatoes: { name: 'Fresh Tomatoes', category: 'Vegetables', priceTier1: 12, priceTier2: 10, quantity: 150, description: 'Premium quality fresh tomatoes', location: 'Nabeul, Tunisia' },
+                olives: { name: 'Organic Olives', category: 'Fruits', priceTier1: 25, priceTier2: 22, quantity: 80, description: 'Organic olives from Sfax', location: 'Sfax, Tunisia' },
+                carrots: { name: 'Fresh Carrots', category: 'Vegetables', priceTier1: 8, priceTier2: 7, quantity: 20, description: 'Fresh carrots', location: 'Kairouan, Tunisia' },
+                corn: { name: 'Sweet Corn', category: 'Grains', priceTier1: 6, priceTier2: 5, quantity: 200, description: 'Sweet corn', location: 'Bizerte, Tunisia' }
+            };
+            return products[productId];
         }
 
         function deleteProduct(productName) {
@@ -429,9 +516,197 @@
             }
         }
 
-        // Initialize cart badge on page load
+        // Handle Orders navigation
+        function handleOrdersNavigation(event) {
+            // Always go to orders.html, filtering will happen there based on profile
+            return true;
+        }
+
+        // Profile-based filtering - ALWAYS check on page load
+        function checkProfileAndFilter() {
+            // Always read from localStorage - never assume a default
+            const selectedProfile = localStorage.getItem('selectedProfile');
+            
+            // Only set default if profile is completely missing AND we're on farmer.html
+            // But prefer to keep existing profile if it exists
+            if (!selectedProfile) {
+                // If no profile set, set to farmer since we're on farmer.html
+                localStorage.setItem('selectedProfile', 'farmer');
+            }
+            
+            // Get the current profile (after potential set above)
+            const currentProfile = localStorage.getItem('selectedProfile');
+            
+            // If not farmer profile, show message
+            if (currentProfile !== 'farmer') {
+                const productsTitle = document.getElementById('productsTitle');
+                if (productsTitle) {
+                    productsTitle.textContent = 'Products (Switch to Farmer profile to manage)';
+                }
+                // Optionally disable add product button
+                const fab = document.querySelector('.fab');
+                if (fab) {
+                    fab.style.display = 'none';
+                }
+            } else {
+                // Farmer profile is selected - show "My Products"
+                const productsTitle = document.getElementById('productsTitle');
+                if (productsTitle) {
+                    productsTitle.textContent = 'My Products';
+                }
+                const fab = document.querySelector('.fab');
+                if (fab) {
+                    fab.style.display = 'flex';
+                }
+            }
+        }
+        
+        // Also check profile when page gains focus (user returns to this tab)
+        window.addEventListener('focus', function() {
+            checkProfileAndFilter();
+        });
+
+        // Render footer navigation based on profile
+        function renderFooterNavigation(currentPage = '') {
+            const footerNav = document.getElementById('footerNav');
+            if (!footerNav) return;
+            
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+            const currentPath = window.location.pathname;
+            
+            // Determine which page we're on
+            let activePage = '';
+            if (currentPath.includes('index.html') || currentPath.endsWith('/')) {
+                activePage = 'home';
+            } else if (currentPath.includes('farmer.html')) {
+                activePage = 'products';
+            } else if (currentPath.includes('vendor.html')) {
+                activePage = 'products';
+            } else if (currentPath.includes('transporter.html')) {
+                activePage = 'deliveries';
+            } else if (currentPath.includes('orders.html')) {
+                activePage = 'orders';
+            } else if (currentPath.includes('profile.html')) {
+                activePage = 'profile';
+            } else if (currentPath.includes('cart.html')) {
+                activePage = 'cart';
+            }
+            
+            // Override with passed parameter if provided
+            if (currentPage) {
+                activePage = currentPage;
+            }
+            
+            let footerHTML = '';
+            
+            if (selectedProfile === 'farmer') {
+                // Farmer footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${activePage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${activePage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${activePage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${activePage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'vendor') {
+                // Vendor footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${activePage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="vendor.html" class="nav-item ${activePage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${activePage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${activePage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'transporter') {
+                // Transporter footer: Home, Deliveries, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${activePage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transporter.html" class="nav-item ${activePage === 'deliveries' ? 'active' : ''}">
+                        <i class="fas fa-truck"></i>
+                        <span>Deliveries</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${activePage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${activePage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else {
+                // Default footer (farmer)
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${activePage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${activePage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${activePage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${activePage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            }
+            
+            footerNav.innerHTML = footerHTML;
+        }
+
+        // Initialize cart badge and profile check on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCartBadge();
+            // Always check profile on page load
+            checkProfileAndFilter();
+            // Render footer based on profile
+            renderFooterNavigation('products');
+        });
+        
+        // Also check when page becomes visible (when user returns from another tab/page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                checkProfileAndFilter();
+            }
+        });
+        
+        // Listen for profile changes from other tabs/windows
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'selectedProfile') {
+                checkProfileAndFilter();
+                // Optionally reload to refresh all content
+                // location.reload();
+            }
         });
     </script>
 </body>

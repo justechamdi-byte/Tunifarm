@@ -627,23 +627,8 @@
     </div>
 
     <!-- Footer Navigation -->
-    <nav class="footer-nav">
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="#" class="nav-item active">
-            <i class="fas fa-truck"></i>
-            <span>Deliveries</span>
-        </a>
-        <a href="orders.html" class="nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Orders</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
+    <nav class="footer-nav" id="footerNav">
+        <!-- Footer will be dynamically generated based on profile -->
     </nav>
 
     <script>
@@ -706,9 +691,112 @@
             }
         }
 
+        // Render footer navigation based on profile
+        function renderFooterNavigation(currentPage = '') {
+            const footerNav = document.getElementById('footerNav');
+            if (!footerNav) return;
+            
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'transporter';
+            
+            let footerHTML = '';
+            
+            if (selectedProfile === 'farmer') {
+                // Farmer footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'vendor') {
+                // Vendor footer: Home, Products, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="vendor.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'transporter') {
+                // Transporter footer: Home, Deliveries, Orders, Profile
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transporter.html" class="nav-item ${currentPage === 'deliveries' ? 'active' : ''}">
+                        <i class="fas fa-truck"></i>
+                        <span>Deliveries</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else {
+                // Default footer (transporter)
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transporter.html" class="nav-item ${currentPage === 'deliveries' ? 'active' : ''}">
+                        <i class="fas fa-truck"></i>
+                        <span>Deliveries</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            }
+            
+            footerNav.innerHTML = footerHTML;
+        }
+
         // Initialize cart badge on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCartBadge();
+            // Render footer based on profile
+            renderFooterNavigation('deliveries');
+        });
+        
+        // Re-render footer when profile changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'selectedProfile') {
+                renderFooterNavigation('deliveries');
+            }
         });
     </script>
 </body>
