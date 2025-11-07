@@ -271,6 +271,11 @@
     z-index: var(--z-fixed);
 }
 
+/* Add padding to body to prevent content from being hidden behind fixed footer */
+body {
+    padding-bottom: 80px;
+}
+
 .nav-item {
     display: flex;
     flex-direction: column;
