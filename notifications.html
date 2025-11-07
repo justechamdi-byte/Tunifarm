@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - AgriTn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Notifications-specific styles */
+        .notifications-header {
+            background: var(--color-surface);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--color-bg);
+        }
+
+        .notifications-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .notifications-subtitle {
+            color: var(--color-muted);
+            font-size: var(--font-size-sm);
+        }
+
+        .notifications-content {
+            padding: var(--spacing-md);
+        }
+
+        .notification-item {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid var(--color-primary);
+            background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, var(--color-surface) 100%);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-lg);
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .notification-icon.order {
+            background: var(--color-info);
+            color: #fff;
+        }
+
+        .notification-icon.delivery {
+            background: var(--color-success);
+            color: #fff;
+        }
+
+        .notification-icon.system {
+            background: var(--color-warning);
+            color: #fff;
+        }
+
+        .notification-icon.payment {
+            background: var(--color-accent);
+            color: #fff;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .notification-message {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .notification-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted);
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .empty-notifications {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--color-muted);
+        }
+
+        .empty-notifications i {
+            font-size: 64px;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-muted);
+        }
+
+        .empty-notifications h3 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .mark-all-read {
+            background: var(--color-primary);
+            color: #fff;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .mark-all-read:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-seedling"></i> AgriTn
+            </div>
+            <div class="flex items-center gap-md">
+                <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+                <a href="notifications.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Notifications Header -->
+    <div class="notifications-header">
+        <h1 class="notifications-title">Notifications</h1>
+        <p class="notifications-subtitle">Stay updated with your latest activities</p>
+    </div>
+
+    <!-- Notifications Content -->
+    <div class="notifications-content">
+        <button class="mark-all-read" onclick="markAllAsRead()">Mark All as Read</button>
+        <div id="notificationsList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav" id="footerNav">
+        <!-- Footer will be dynamically generated based on profile -->
+    </nav>
+
+    <script>
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+            }
+        }
+
+        // Update notification badge based on profile
+        function updateNotificationBadge() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+            const notificationBadge = document.querySelectorAll('.notification-badge')[1]; // Bell icon badge
+            if (notificationBadge) {
+                const notificationCounts = {
+                    farmer: 3,
+                    vendor: 5,
+                    transporter: 7,
+                    admin: 12
+                };
+                notificationBadge.textContent = notificationCounts[selectedProfile] || 0;
+            }
+        }
+
+        // Get notifications based on profile
+        function getNotifications() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+
+            const notificationsData = {
+                farmer: [
+                    {
+                        id: 1,
+                        type: 'order',
+                        title: 'New Order Received',
+                        message: 'Ali\'s Market ordered 50kg of tomatoes from your farm.',
+                        time: '2 hours ago',
+                        unread: true,
+                        icon: 'fas fa-shopping-cart'
+                    },
+                    {
+                        id: 2,
+                        type: 'delivery',
+                        title: 'Delivery Completed',
+                        message: 'Your olives delivery to Central Market has been completed successfully.',
+                        time: '1 day ago',
+                        unread: true,
+                        icon: 'fas fa-truck'
+                    },
+                    {
+                        id: 3,
+                        type: 'system',
+                        title: 'Profile Updated',
+                        message: 'Your farm profile has been verified and is now live.',
+                        time: '2 days ago',
+                        unread: false,
+                        icon: 'fas fa-check-circle'
+                    }
+                ],
+                vendor: [
+                    {
+                        id: 1,
+                        type: 'order',
+                        title: 'Order Confirmed',
+                        message: 'Your order for fresh carrots has been confirmed by Mohamed\'s Field.',
+                        time: '1 hour ago',
+                        unread: true,
+                        icon: 'fas fa-shopping-cart'
+                    },
+                    {
+                        id: 2,
+                        type: 'delivery',
+                        title: 'Delivery Scheduled',
+                        message: 'Your olives order will be delivered tomorrow between 9-11 AM.',
+                        time: '3 hours ago',
+                        unread: true,
+                        icon: 'fas fa-truck'
+                    },
+                    {
+                        id: 3,
+                        type: 'payment',
+                        title: 'Payment Processed',
+                        message: 'Payment of 840 TND for Order #ORD-2025-1234 has been processed.',
+                        time: '5 hours ago',
+                        unread: true,
+                        icon: 'fas fa-credit-card'
+                    },
+                    {
+                        id: 4,
+                        type: 'system',
+                        title: 'New Products Available',
+                        message: 'Fresh citrus fruits are now available from Nadia\'s Grove.',
+                        time: '1 day ago',
+                        unread: true,
+                        icon: 'fas fa-leaf'
+                    },
+                    {
+                        id: 5,
+                        type: 'order',
+                        title: 'Order Delivered',
+                        message: 'Your order for sweet corn has been delivered successfully.',
+                        time: '2 days ago',
+                        unread: false,
+                        icon: 'fas fa-check-circle'
+                    }
+                ],
+                transporter: [
+                    {
+                        id: 1,
+                        type: 'delivery',
+                        title: 'New Delivery Request',
+                        message: 'Ahmed\'s Farm needs delivery of 150kg tomatoes to Ali\'s Market.',
+                        time: '30 minutes ago',
+                        unread: true,
+                        icon: 'fas fa-truck'
+                    },
+                    {
+                        id: 2,
+                        type: 'delivery',
+                        title: 'Delivery Assigned',
+                        message: 'You have been assigned to deliver olives from Fatma\'s Orchard.',
+                        time: '2 hours ago',
+                        unread: true,
+                        icon: 'fas fa-route'
+                    },
+                    {
+                        id: 3,
+                        type: 'payment',
+                        title: 'Payment Received',
+                        message: 'Payment of 85 TND received for delivery #DEL-2025-5678.',
+                        time: '4 hours ago',
+                        unread: true,
+                        icon: 'fas fa-money-bill-wave'
+                    },
+                    {
+                        id: 4,
+                        type: 'system',
+                        title: 'Vehicle Maintenance Due',
+                        message: 'Your vehicle maintenance is due in 3 days. Schedule service now.',
+                        time: '1 day ago',
+                        unread: true,
+                        icon: 'fas fa-wrench'
+                    },
+                    {
+                        id: 5,
+                        type: 'delivery',
+                        title: 'Delivery Completed',
+                        message: 'Delivery #DEL-2025-5456 marked as completed. Great job!',
+                        time: '1 day ago',
+                        unread: true,
+                        icon: 'fas fa-check-circle'
+                    },
+                    {
+                        id: 6,
+                        type: 'order',
+                        title: 'New Route Available',
+                        message: 'High-priority delivery route available from Sfax to Tunis.',
+                        time: '2 days ago',
+                        unread: true,
+                        icon: 'fas fa-map-marked-alt'
+                    },
+                    {
+                        id: 7,
+                        type: 'system',
+                        title: 'Weekly Earnings Report',
+                        message: 'Your earnings for this week: 1,250 TND. View detailed report.',
+                        time: '3 days ago',
+                        unread: false,
+                        icon: 'fas fa-chart-line'
+                    }
+                ],
+                admin: [
+                    {
+                        id: 1,
+                        type: 'system',
+                        title: 'New User Registration',
+                        message: 'Fatma Mohamed registered as a new vendor. Review pending.',
+                        time: '15 minutes ago',
+                        unread: true,
+                        icon: 'fas fa-user-plus'
+                    },
+                    {
+                        id: 2,
+                        type: 'order',
+                        title: 'High-Value Order Alert',
+                        message: 'Order #ORD-2025-1189 exceeds 500 TND. Special attention required.',
+                        time: '1 hour ago',
+                        unread: true,
+                        icon: 'fas fa-exclamation-triangle'
+                    },
+                    {
+                        id: 3,
+                        type: 'delivery',
+                        title: 'Delivery Issue Reported',
+                        message: 'Transporter Ali Ben Salah reported delay in delivery #DEL-2025-5679.',
+                        time: '2 hours ago',
+                        unread: true,
+                        icon: 'fas fa-exclamation-circle'
+                    },
+                    {
+                        id: 4,
+                        type: 'payment',
+                        title: 'Payment Dispute',
+                        message: 'Vendor Ahmed Hassan disputed payment for Order #ORD-2025-1067.',
+                        time: '3 hours ago',
+                        unread: true,
+                        icon: 'fas fa-money-bill-wave'
+                    },
+                    {
+                        id: 5,
+                        type: 'system',
+                        title: 'System Maintenance',
+                        message: 'Scheduled maintenance completed. All systems operational.',
+                        time: '5 hours ago',
+                        unread: true,
+                        icon: 'fas fa-cog'
+                    },
+                    {
+                        id: 6,
+                        type: 'order',
+                        title: 'Bulk Order Processed',
+                        message: 'Bulk order of 500kg processed for Central Market.',
+                        time: '6 hours ago',
+                        unread: true,
+                        icon: 'fas fa-shopping-basket'
+                    },
+                    {
+                        id: 7,
+                        type: 'delivery',
+                        title: 'New Transporter Application',
+                        message: 'New transporter application received from Tunis region.',
+                        time: '1 day ago',
+                        unread: true,
+                        icon: 'fas fa-truck'
+                    },
+                    {
+                        id: 8,
+                        type: 'system',
+                        title: 'Monthly Report Generated',
+                        message: 'December 2025 monthly analytics report is ready for review.',
+                        time: '1 day ago',
+                        unread: true,
+                        icon: 'fas fa-chart-bar'
+                    },
+                    {
+                        id: 9,
+                        type: 'payment',
+                        title: 'Revenue Milestone',
+                        message: 'Monthly revenue exceeded 45,000 TND. Congratulations!',
+                        time: '2 days ago',
+                        unread: true,
+                        icon: 'fas fa-trophy'
+                    },
+                    {
+                        id: 10,
+                        type: 'order',
+                        title: 'Product Approval Needed',
+                        message: '5 new products pending approval from various farmers.',
+                        time: '2 days ago',
+                        unread: true,
+                        icon: 'fas fa-check-circle'
+                    },
+                    {
+                        id: 11,
+                        type: 'system',
+                        title: 'Security Alert',
+                        message: 'Multiple failed login attempts detected for admin account.',
+                        time: '3 days ago',
+                        unread: true,
+                        icon: 'fas fa-shield-alt'
+                    },
+                    {
+                        id: 12,
+                        type: 'delivery',
+                        title: 'Route Optimization Complete',
+                        message: 'AI route optimization completed for all active deliveries.',
+                        time: '3 days ago',
+                        unread: false,
+                        icon: 'fas fa-route'
+                    }
+                ]
+            };
+
+            return notificationsData[selectedProfile] || [];
+        }
+
+        // Render notifications
+        function renderNotifications() {
+            const notifications = getNotifications();
+            const container = document.getElementById('notificationsList');
+
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No notifications</h3>
+                        <p>You don't have any notifications at the moment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            notifications.forEach(notification => {
+                const unreadClass = notification.unread ? 'unread' : '';
+                const iconClass = getIconClass(notification.type);
+
+                html += `
+                    <div class="notification-item ${unreadClass}" onclick="markAsRead(${notification.id})">
+                        <div class="notification-header">
+                            <div class="notification-icon ${notification.type}">
+                                <i class="${notification.icon}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">${notification.title}</div>
+                                <div class="notification-message">${notification.message}</div>
+                                <div class="notification-time">${notification.time}</div>
+                            </div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); dismissNotification(${notification.id})">
+                                <i class="fas fa-times"></i> Dismiss
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function getIconClass(type) {
+            const classes = {
+                order: 'order',
+                delivery: 'delivery',
+                system: 'system',
+                payment: 'payment'
+            };
+            return classes[type] || 'system';
+        }
+
+        function markAsRead(notificationId) {
+            // In a real app, this would update the server
+            console.log(`Marked notification ${notificationId} as read`);
+            // For demo, just re-render
+            renderNotifications();
+        }
+
+        function dismissNotification(notificationId) {
+            // In a real app, this would remove from server
+            console.log(`Dismissed notification ${notificationId}`);
+            // For demo, just re-render
+            renderNotifications();
+        }
+
+        function markAllAsRead() {
+            // In a real app, this would update all notifications on server
+            console.log('Marked all notifications as read');
+            // For demo, just re-render
+            renderNotifications();
+        }
+
+        // Render footer navigation based on profile
+        function renderFooterNavigation(currentPage = '') {
+            const footerNav = document.getElementById('footerNav');
+            if (!footerNav) return;
+
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+
+            let footerHTML = '';
+
+            if (selectedProfile === 'farmer') {
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="farmer.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'vendor') {
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="vendor.html" class="nav-item ${currentPage === 'products' ? 'active' : ''}">
+                        <i class="fas fa-leaf"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else if (selectedProfile === 'transporter') {
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transporter.html" class="nav-item ${currentPage === 'deliveries' ? 'active' : ''}">
+                        <i class="fas fa-truck"></i>
+                        <span>Deliveries</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            } else {
+                footerHTML = `
+                    <a href="index.html" class="nav-item ${currentPage === 'home' ? 'active' : ''}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="admin.html" class="nav-item ${currentPage === 'admin' ? 'active' : ''}">
+                        <i class="fas fa-cog"></i>
+                        <span>Admin</span>
+                    </a>
+                    <a href="orders.html" class="nav-item ${currentPage === 'orders' ? 'active' : ''}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="profile.html" class="nav-item ${currentPage === 'profile' ? 'active' : ''}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                `;
+            }
+
+            footerNav.innerHTML = footerHTML;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+            updateNotificationBadge();
+            renderNotifications();
+            renderFooterNavigation('notifications');
+        });
+
+        // Update notifications when profile changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'selectedProfile') {
+                updateNotificationBadge();
+                renderNotifications();
+                renderFooterNavigation('notifications');
+            }
+        });
+    </script>
+</body>
+</html>

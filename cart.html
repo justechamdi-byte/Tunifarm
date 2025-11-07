@@ -563,6 +563,21 @@
             badge.textContent = totalItems;
         }
 
+        // Update notification badge based on profile
+        function updateNotificationBadge() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'vendor';
+            const notificationBadge = document.querySelectorAll('.notification-badge')[1]; // Bell icon badge
+            if (notificationBadge) {
+                const notificationCounts = {
+                    farmer: 3,
+                    vendor: 5,
+                    transporter: 7,
+                    admin: 12
+                };
+                notificationBadge.textContent = notificationCounts[selectedProfile] || 0;
+            }
+        }
+
         function applyPromoCode() {
             const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
             const validCodes = ['SAVE10', 'WELCOME20', 'FARMER15'];
@@ -701,7 +716,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadCartFromStorage();
             updateCartBadge();
-            
+            updateNotificationBadge();
+
             // Add event listeners to quantity inputs
             document.addEventListener('change', function(e) {
                 if (e.target.classList.contains('quantity-input')) {

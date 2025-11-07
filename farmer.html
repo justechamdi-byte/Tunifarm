@@ -136,10 +136,10 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="notification-badge">0</span>
                 </a>
-                <div class="notification-icon">
+                <a href="notifications.html" class="notification-icon" style="text-decoration: none; color: inherit;">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge">3</span>
-                </div>
+                </a>
                 <i class="fas fa-bars" style="font-size: 20px; color: var(--color-muted); cursor: pointer;"></i>
             </div>
         </nav>
@@ -516,6 +516,21 @@
             }
         }
 
+        // Update notification badge based on profile
+        function updateNotificationBadge() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+            const notificationBadge = document.querySelectorAll('.notification-badge')[1]; // Bell icon badge
+            if (notificationBadge) {
+                const notificationCounts = {
+                    farmer: 3,
+                    vendor: 5,
+                    transporter: 7,
+                    admin: 12
+                };
+                notificationBadge.textContent = notificationCounts[selectedProfile] || 0;
+            }
+        }
+
         // Handle Orders navigation
         function handleOrdersNavigation(event) {
             // Always go to orders.html, filtering will happen there based on profile
@@ -687,6 +702,7 @@
         // Initialize cart badge and profile check on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCartBadge();
+            updateNotificationBadge();
             // Always check profile on page load
             checkProfileAndFilter();
             // Render footer based on profile
@@ -704,6 +720,7 @@
         window.addEventListener('storage', function(e) {
             if (e.key === 'selectedProfile') {
                 checkProfileAndFilter();
+                updateNotificationBadge();
                 // Optionally reload to refresh all content
                 // location.reload();
             }

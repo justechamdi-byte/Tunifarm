@@ -350,6 +350,10 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="notification-badge">2</span>
                 </a>
+                <a href="notifications.html" class="notification-icon" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </a>
             </div>
         </nav>
     </header>
@@ -880,9 +884,25 @@
             footerNav.innerHTML = footerHTML;
         }
 
+        // Update notification badge based on profile
+        function updateNotificationBadge() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'vendor';
+            const notificationBadge = document.querySelectorAll('.notification-badge')[1]; // Bell icon badge
+            if (notificationBadge) {
+                const notificationCounts = {
+                    farmer: 3,
+                    vendor: 5,
+                    transporter: 7,
+                    admin: 12
+                };
+                notificationBadge.textContent = notificationCounts[selectedProfile] || 0;
+            }
+        }
+
         // Initialize cart badge and profile check on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCartBadge();
+            updateNotificationBadge();
             // Always check profile on page load
             checkProfileAndFilter();
             // Render footer based on profile
@@ -894,6 +914,7 @@
             if (e.key === 'selectedProfile') {
                 renderFooterNavigation('products');
                 checkProfileAndFilter();
+                updateNotificationBadge();
             }
         });
         

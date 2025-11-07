@@ -283,10 +283,10 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="notification-badge">0</span>
                 </a>
-                <div class="notification-icon">
+                <a href="notifications.html" class="notification-icon" style="text-decoration: none; color: inherit;">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge">5</span>
-                </div>
+                </a>
             </div>
         </nav>
     </header>
@@ -662,6 +662,21 @@
             }
         }
 
+        // Update notification badge based on profile
+        function updateNotificationBadge() {
+            const selectedProfile = localStorage.getItem('selectedProfile') || 'farmer';
+            const notificationBadge = document.querySelectorAll('.notification-badge')[1]; // Bell icon badge
+            if (notificationBadge) {
+                const notificationCounts = {
+                    farmer: 3,
+                    vendor: 5,
+                    transporter: 7,
+                    admin: 12
+                };
+                notificationBadge.textContent = notificationCounts[selectedProfile] || 0;
+            }
+        }
+
         // Profile-based order filtering - ALWAYS check on page load
         function filterOrdersByProfile() {
             // Always read from localStorage - preserve existing profile
@@ -885,23 +900,24 @@
             // Initialize tabs - ensure only first tab is visible
             const tabs = document.querySelectorAll('.order-tab');
             const tabContents = document.querySelectorAll('.order-tab-content');
-            
+
             // Remove active from all tabs and content
             tabs.forEach(tab => tab.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
-            
+
             // Activate first tab (All Orders)
             if (tabs[0]) tabs[0].classList.add('active');
             if (tabContents[0]) tabContents[0].classList.add('active');
-            
+
             // Update cart badge
             updateCartBadge();
-            
+            updateNotificationBadge();
+
             // Always filter orders based on current profile
             if (typeof filterOrdersByProfile === 'function') {
                 filterOrdersByProfile();
             }
-            
+
             // Render footer based on profile
             if (typeof renderFooterNavigation === 'function') {
                 renderFooterNavigation('orders');
@@ -924,6 +940,7 @@
         window.addEventListener('storage', function(e) {
             if (e.key === 'selectedProfile') {
                 filterOrdersByProfile();
+                updateNotificationBadge();
             }
         });
     </script>
