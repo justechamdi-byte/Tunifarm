@@ -1,10 +1,10 @@
-# TuniFarm - Tunisian Agriculture Marketplace
+# Mago - Tunisian Agriculture Marketplace
 
 A complete mobile-first web application for Tunisia's agricultural marketplace, connecting farmers, vendors, and transporters.
 
 ## 🌾 Project Overview
 
-TuniFarm is a comprehensive agricultural marketplace platform designed specifically for Tunisia's farming community. The application facilitates direct connections between farmers, vendors, and transporters, streamlining the agricultural supply chain.
+Mago is a comprehensive agricultural marketplace platform designed specifically for Tunisia's farming community. The application facilitates direct connections between farmers, vendors, and transporters, streamlining the agricultural supply chain.
 
 ## 📱 Features
 
@@ -183,4 +183,4 @@ For questions or support, please contact the development team.
 
 ---
 
-**TuniFarm** - Connecting Tunisia's Agricultural Community 🌾
+**Mago** - Connecting Tunisia's Agricultural Community 🌾
