@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - AgriTn</title>
+    <title>Shopping Cart - TuniFarm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/root.css">
@@ -294,7 +294,7 @@
     <header class="header">
         <nav class="nav">
             <div class="logo">
-                <i class="fas fa-seedling"></i> AgriTn
+                <i class="fas fa-seedling"></i> TuniFarm
             </div>
             <div class="flex items-center gap-md">
                 <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
@@ -327,7 +327,7 @@
                                 Nabeul, Tunisia
                             </div>
                         </div>
-                        <div class="item-price">12 TND/kg</div>
+                        <div class="item-price">2.800 TND/kg</div>
                     </div>
                     <div class="quantity-controls">
                         <button class="quantity-btn" onclick="updateQuantity('tomatoes', -1)">
@@ -360,7 +360,7 @@
                                 Kairouan, Tunisia
                             </div>
                         </div>
-                        <div class="item-price">8 TND/kg</div>
+                        <div class="item-price">1.800 TND/kg</div>
                     </div>
                     <div class="quantity-controls">
                         <button class="quantity-btn" onclick="updateQuantity('carrots', -1)">
@@ -393,7 +393,7 @@
                                 Sfax, Tunisia
                             </div>
                         </div>
-                        <div class="item-price">25 TND/kg</div>
+                        <div class="item-price">15.000 TND/kg</div>
                     </div>
                     <div class="quantity-controls">
                         <button class="quantity-btn" onclick="updateQuantity('olives', -1)">
@@ -427,7 +427,7 @@
                 
                 <div class="summary-row">
                     <span class="summary-label">Subtotal (100kg)</span>
-                    <span class="summary-value" id="subtotal">1,240 TND</span>
+                    <span class="summary-value" id="subtotal">494 TND</span>
                 </div>
                 
                 <div class="summary-row">
@@ -442,7 +442,7 @@
                 
                 <div class="summary-row total">
                     <span class="summary-label">Total</span>
-                    <span class="summary-value" id="total">1,240 TND</span>
+                    <span class="summary-value" id="total">494 TND</span>
                 </div>
                 
                 <div class="promo-code">
@@ -475,9 +475,9 @@
             <i class="fas fa-leaf"></i>
             <span>Products</span>
         </a>
-        <a href="cart.html" class="nav-item active">
+        <a href="orders.html" class="nav-item">
             <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
+            <span>Orders</span>
         </a>
         <a href="profile.html" class="nav-item">
             <i class="fas fa-user"></i>
@@ -606,11 +606,34 @@
             const storedCart = localStorage.getItem('cart');
             if (storedCart) {
                 cartItems = JSON.parse(storedCart);
+                // Update prices to current values
+                updateCartPrices();
                 renderCartItems();
             } else {
                 // Show empty cart if no items
                 showEmptyCart();
             }
+        }
+
+        // Update cart prices to current values
+        function updateCartPrices() {
+            const currentPrices = {
+                tomatoes: 2.8,
+                carrots: 1.8,
+                olives: 15,
+                corn: 2.5,
+                potatoes: 1.5,
+                citrus: 3.8
+            };
+
+            Object.keys(cartItems).forEach(itemId => {
+                if (currentPrices[itemId] && cartItems[itemId].price !== currentPrices[itemId]) {
+                    cartItems[itemId].price = currentPrices[itemId];
+                }
+            });
+
+            // Save updated cart
+            localStorage.setItem('cart', JSON.stringify(cartItems));
         }
 
         function renderCartItems() {

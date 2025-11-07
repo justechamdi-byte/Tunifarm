@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmer Dashboard - AgriTn</title>
+    <title>Farmer Dashboard - TuniFarm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/root.css">
@@ -129,7 +129,7 @@
     <header class="header">
         <nav class="nav">
             <div class="logo">
-                <i class="fas fa-seedling"></i> AgriTn
+                <i class="fas fa-seedling"></i> TuniFarm
             </div>
             <div class="flex items-center gap-md">
                 <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
@@ -196,8 +196,8 @@
                 </div>
                 <div class="product-footer">
                     <div class="product-price">
-                        <div>12 TND/kg (10-49kg)</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">10 TND/kg (50-100kg)</div>
+                        <div>2.800 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">2.500 TND/kg (50-100kg)</div>
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('tomatoes')">
@@ -224,8 +224,8 @@
                 </div>
                 <div class="product-footer">
                     <div class="product-price">
-                        <div>25 TND/kg (10-49kg)</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">22 TND/kg (50-100kg)</div>
+                        <div>15.000 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">13.500 TND/kg (50-100kg)</div>
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('olives')">
@@ -252,8 +252,8 @@
                 </div>
                 <div class="product-footer">
                     <div class="product-price">
-                        <div>8 TND/kg (10-49kg)</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">7 TND/kg (50-100kg)</div>
+                        <div>1.800 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">1.620 TND/kg (50-100kg)</div>
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('carrots')">
@@ -280,8 +280,8 @@
                 </div>
                 <div class="product-footer">
                     <div class="product-price">
-                        <div>6 TND/kg (10-49kg)</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">5 TND/kg (50-100kg)</div>
+                        <div>2.500 TND/kg (10-49kg)</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--color-success);">2.250 TND/kg (50-100kg)</div>
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-outline btn-sm" onclick="editProduct('corn')">
@@ -463,8 +463,8 @@
                     const selects = form.querySelectorAll('.form-select');
                     if (selects.length > 0) selects[0].value = productData.category;
                     
-                    document.getElementById('price-tier1').value = productData.priceTier1 || 12;
-                    document.getElementById('price-tier2').value = productData.priceTier2 || 10;
+                    document.getElementById('price-tier1').value = productData.priceTier1 || 2.8;
+                    document.getElementById('price-tier2').value = productData.priceTier2 || 2.5;
                     
                     const numberInputs = form.querySelectorAll('input[type="number"]');
                     // Skip price inputs, get quantity input
@@ -487,10 +487,10 @@
 
         function getProductData(productId) {
             const products = {
-                tomatoes: { name: 'Fresh Tomatoes', category: 'Vegetables', priceTier1: 12, priceTier2: 10, quantity: 150, description: 'Premium quality fresh tomatoes', location: 'Nabeul, Tunisia' },
-                olives: { name: 'Organic Olives', category: 'Fruits', priceTier1: 25, priceTier2: 22, quantity: 80, description: 'Organic olives from Sfax', location: 'Sfax, Tunisia' },
-                carrots: { name: 'Fresh Carrots', category: 'Vegetables', priceTier1: 8, priceTier2: 7, quantity: 20, description: 'Fresh carrots', location: 'Kairouan, Tunisia' },
-                corn: { name: 'Sweet Corn', category: 'Grains', priceTier1: 6, priceTier2: 5, quantity: 200, description: 'Sweet corn', location: 'Bizerte, Tunisia' }
+                tomatoes: { name: 'Fresh Tomatoes', category: 'Vegetables', priceTier1: 2.8, priceTier2: 2.5, quantity: 150, description: 'Premium quality fresh tomatoes', location: 'Nabeul, Tunisia' },
+                olives: { name: 'Organic Olives', category: 'Fruits', priceTier1: 15, priceTier2: 13.5, quantity: 80, description: 'Organic olives from Sfax', location: 'Sfax, Tunisia' },
+                carrots: { name: 'Fresh Carrots', category: 'Vegetables', priceTier1: 1.8, priceTier2: 1.62, quantity: 20, description: 'Fresh carrots', location: 'Kairouan, Tunisia' },
+                corn: { name: 'Sweet Corn', category: 'Grains', priceTier1: 2.5, priceTier2: 2.25, quantity: 200, description: 'Sweet corn', location: 'Bizerte, Tunisia' }
             };
             return products[productId];
         }

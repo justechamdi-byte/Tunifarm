@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriTn - Tunisian Agriculture Marketplace</title>
+    <title>TuniFarm - Tunisian Agriculture Marketplace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/root.css">
@@ -57,6 +57,50 @@
             flex-direction: column;
             gap: var(--spacing-md);
             margin-top: var(--spacing-lg);
+        }
+
+        .btn-farmer {
+            background: #4CAF50;
+            color: white;
+            border: 2px solid #4CAF50;
+        }
+
+        .btn-farmer:hover {
+            background: #45a049;
+            border-color: #45a049;
+        }
+
+        .btn-vendor {
+            background: #FF9800;
+            color: white;
+            border: 2px solid #FF9800;
+        }
+
+        .btn-vendor:hover {
+            background: #f57c00;
+            border-color: #f57c00;
+        }
+
+        .btn-transporter {
+            background: #FF5722;
+            color: white;
+            border: 2px solid #FF5722;
+        }
+
+        .btn-transporter:hover {
+            background: #D84315;
+            border-color: #D84315;
+        }
+
+        .btn-admin {
+            background: #607D8B;
+            color: white;
+            border: 2px solid #607D8B;
+        }
+
+        .btn-admin:hover {
+            background: #455A64;
+            border-color: #455A64;
         }
         
         .lang-toggle {
@@ -222,10 +266,10 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <nav class="nav container">
+        <nav class="nav">
             <div class="logo">
                 <i class="fas fa-seedling"></i>
-                <span>AgriTn</span>
+                <span>TuniFarm</span>
             </div>
             <div class="flex items-center gap-md">
                 <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
@@ -248,17 +292,20 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>🌾 Welcome to AgriTn</h1>
+            <h1>🌾 Welcome to TuniFarm</h1>
             <p>Tunisia's Premier Agricultural Marketplace<br>Connecting Farmers, Vendors & Transporters</p>
             <div class="hero-buttons">
-                <a href="farmer.html" class="btn btn-primary btn-lg" onclick="setProfileAndNavigate('farmer', 'farmer.html', event)">
+                <a href="farmer.html" class="btn btn-farmer btn-lg" onclick="setProfileAndNavigate('farmer', 'farmer.html', event)">
                     <i class="fas fa-tractor"></i> Join as Farmer
                 </a>
-                <a href="vendor.html" class="btn btn-outline btn-lg" onclick="setProfileAndNavigate('vendor', 'vendor.html', event)">
+                <a href="vendor.html" class="btn btn-vendor btn-lg" onclick="setProfileAndNavigate('vendor', 'vendor.html', event)">
                     <i class="fas fa-store"></i> Join as Vendor
                 </a>
-                <a href="transporter.html" class="btn btn-accent btn-lg" onclick="setProfileAndNavigate('transporter', 'transporter.html', event)">
+                <a href="transporter.html" class="btn btn-transporter btn-lg" onclick="setProfileAndNavigate('transporter', 'transporter.html', event)">
                     <i class="fas fa-truck"></i> Join as Transporter
+                </a>
+                <a href="admin.html" class="btn btn-admin btn-lg" onclick="setProfileAndNavigate('admin', 'admin.html', event)">
+                    <i class="fas fa-cog"></i> Join as Admin
                 </a>
             </div>
         </div>
@@ -267,7 +314,7 @@
     <!-- Features Section -->
     <section class="features">
         <div class="container">
-            <h2 class="section-title">Why Choose AgriTn?</h2>
+            <h2 class="section-title">Why Choose TuniFarm?</h2>
             <div class="features-grid">
                 <div class="card feature-card">
                     <div class="feature-icon">🌱</div>
@@ -302,7 +349,7 @@
                     <div class="product-image">🍅</div>
                     <div class="product-info">
                         <div class="product-title">Fresh Tomatoes</div>
-                        <div class="product-price">12 TND/kg</div>
+                        <div class="product-price">2.800 TND/kg</div>
                         <div class="product-location"><i class="fas fa-map-marker-alt"></i> Nabeul</div>
                     </div>
                 </div>
@@ -310,7 +357,7 @@
                     <div class="product-image">🫒</div>
                     <div class="product-info">
                         <div class="product-title">Organic Olives</div>
-                        <div class="product-price">25 TND/kg</div>
+                        <div class="product-price">15.000 TND/kg</div>
                         <div class="product-location"><i class="fas fa-map-marker-alt"></i> Sfax</div>
                     </div>
                 </div>
@@ -318,7 +365,7 @@
                     <div class="product-image">🥕</div>
                     <div class="product-info">
                         <div class="product-title">Fresh Carrots</div>
-                        <div class="product-price">8 TND/kg</div>
+                        <div class="product-price">1.800 TND/kg</div>
                         <div class="product-location"><i class="fas fa-map-marker-alt"></i> Kairouan</div>
                     </div>
                 </div>
@@ -326,7 +373,7 @@
                     <div class="product-image">🌽</div>
                     <div class="product-info">
                         <div class="product-title">Sweet Corn</div>
-                        <div class="product-price">6 TND/kg</div>
+                        <div class="product-price">2.500 TND/kg</div>
                         <div class="product-location"><i class="fas fa-map-marker-alt"></i> Bizerte</div>
                     </div>
                 </div>
@@ -334,7 +381,7 @@
                     <div class="product-image">🥔</div>
                     <div class="product-info">
                         <div class="product-title">Potatoes</div>
-                        <div class="product-price">5 TND/kg</div>
+                        <div class="product-price">1.500 TND/kg</div>
                         <div class="product-location"><i class="fas fa-map-marker-alt"></i> Jendouba</div>
                     </div>
                 </div>
@@ -342,7 +389,7 @@
                     <div class="product-image">🍊</div>
                     <div class="product-info">
                         <div class="product-title">Citrus Fruits</div>
-                        <div class="product-price">15 TND/kg</div>
+                        <div class="product-price">3.800 TND/kg</div>
                         <div class="product-location"><i class="fas fa-map-marker-alt"></i> Monastir</div>
                     </div>
                 </div>
@@ -353,9 +400,9 @@
     <!-- About Section -->
     <section class="about-section">
         <div class="container">
-            <h2 class="section-title">About AgriTn</h2>
+            <h2 class="section-title">About TuniFarm</h2>
             <div class="about-content">
-                <p class="text-center">AgriTn is revolutionizing Tunisia's agricultural supply chain by connecting farmers directly with vendors and ensuring efficient logistics through our network of transporters. We're committed to supporting local agriculture and making fresh, quality produce accessible to all.</p>
+                <p class="text-center">TuniFarm is revolutionizing Tunisia's agricultural supply chain by connecting farmers directly with vendors and ensuring efficient logistics through our network of transporters. We're committed to supporting local agriculture and making fresh, quality produce accessible to all.</p>
             </div>
         </div>
     </section>

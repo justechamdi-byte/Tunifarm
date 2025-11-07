@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - AgriTn</title>
+    <title>Admin Dashboard - TuniFarm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/root.css">
@@ -289,6 +289,14 @@
             color: var(--color-muted);
         }
         
+        .admin-tab-content {
+            display: none;
+        }
+
+        .admin-tab-content.active {
+            display: block;
+        }
+
         @media (min-width: 768px) {
             .admin-stats {
                 grid-template-columns: repeat(4, 1fr);
@@ -304,7 +312,7 @@
     <header class="header">
         <nav class="nav">
             <div class="logo">
-                <i class="fas fa-seedling"></i> AgriTn Admin
+                <i class="fas fa-seedling"></i> TuniFarm Admin
             </div>
             <div class="flex items-center gap-md">
                 <a href="cart.html" class="notification-icon" style="text-decoration: none; color: inherit;">
@@ -541,7 +549,7 @@
                                 </td>
                                 <td>Ahmed Hassan</td>
                                 <td><span class="status-badge status-active">Approved</span></td>
-                                <td>12 TND/kg</td>
+                                <td>2.800 TND/kg</td>
                                 <td>
                                     <div class="action-buttons">
                                         <div class="btn-icon view" onclick="viewProduct('tomatoes')">
@@ -565,7 +573,7 @@
                                 </td>
                                 <td>Fatma Mohamed</td>
                                 <td><span class="status-badge status-pending">Pending</span></td>
-                                <td>25 TND/kg</td>
+                                <td>15.000 TND/kg</td>
                                 <td>
                                     <div class="action-buttons">
                                         <div class="btn-icon view" onclick="viewProduct('olives')">
@@ -606,7 +614,7 @@
                             <tr>
                                 <td>#ORD-2025-1234</td>
                                 <td>Ali's Market</td>
-                                <td>840 TND</td>
+                                <td>194 TND</td>
                                 <td><span class="status-badge status-active">In Transit</span></td>
                                 <td>Oct 20, 2025</td>
                                 <td>
@@ -623,7 +631,7 @@
                             <tr>
                                 <td>#ORD-2025-1189</td>
                                 <td>Central Market</td>
-                                <td>500 TND</td>
+                                <td>300 TND</td>
                                 <td><span class="status-badge status-pending">Processing</span></td>
                                 <td>Oct 22, 2025</td>
                                 <td>
